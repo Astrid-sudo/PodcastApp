@@ -71,7 +71,7 @@ class AudioPlayer {
     func configQueuePlayer(_ urlString: String) {
         guard let url = URL(string: urlString) else { return }
         queuePlayer = AVQueuePlayer(url: url)
-        observePlayerItem(previousPlayerItem: nil, currentPlayerItem: currentItem)
+        observePlayerItem(currentPlayerItem: currentItem)
     }
     
     func replaceCurrentItem(with urlString: String) {
@@ -84,7 +84,7 @@ class AudioPlayer {
     }
     
     /// Access AVPlayerItem duration once AVPlayerItem is loaded
-    func observeItemStatus(previousPlayerItem: AVPlayerItem? = nil, currentPlayerItem: AVPlayerItem?) {
+    func observeItemStatus(currentPlayerItem: AVPlayerItem?) {
         guard let currentPlayerItem = currentPlayerItem else { return }
         statusObserve = currentPlayerItem.observe(\.status, options: [.initial, .new]) { [weak self] _, _ in
             guard let self = self else { return }
@@ -93,17 +93,14 @@ class AudioPlayer {
     }
     
     /// Observe player item did play end.
-    func observeItemPlayEnd(previousPlayerItem: AVPlayerItem? = nil, currentPlayerItem: AVPlayerItem?) {
-        if let previousPlayerItem = previousPlayerItem {
-            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: previousPlayerItem)
-        }
+    func observeItemPlayEnd(currentPlayerItem: AVPlayerItem?) {
         NotificationCenter.default.addObserver(self, selector: #selector(didPlaybackEnd), name: .AVPlayerItemDidPlayToEndTime, object: currentPlayerItem)
     }
     
     /// Observe player item buffering, status and play end.
     func observePlayerItem(previousPlayerItem: AVPlayerItem? = nil, currentPlayerItem: AVPlayerItem?) {
-        self.observeItemStatus(previousPlayerItem: previousPlayerItem, currentPlayerItem: currentPlayerItem)
-        self.observeItemPlayEnd(previousPlayerItem: previousPlayerItem, currentPlayerItem: currentPlayerItem)
+        self.observeItemStatus(currentPlayerItem: currentPlayerItem)
+        self.observeItemPlayEnd(currentPlayerItem: currentPlayerItem)
     }
     
     /// Tell the delegate didPlaybackEnd. If next item exist in AVQueuePlayer, observe next item.
