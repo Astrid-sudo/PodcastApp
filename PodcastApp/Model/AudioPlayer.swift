@@ -28,12 +28,12 @@ class AudioPlayer {
     
     // MARK: - Properties
     
-    private(set) var queuePlayer: AVPlayer?
+    private(set) var avPlayer: AVPlayer?
     
     var playerState: PlayerState = .unknow
     
     var currentItem: AVPlayerItem? {
-        return queuePlayer?.currentItem
+        return avPlayer?.currentItem
     }
     
     var currentItemDuration: CMTime? {
@@ -70,7 +70,7 @@ class AudioPlayer {
     /// - Parameter urlString: The first player item in player.
     func configQueuePlayer(_ urlString: String) {
         guard let url = URL(string: urlString) else { return }
-        queuePlayer = AVQueuePlayer(url: url)
+        avPlayer = AVPlayer(url: url)
         observePlayerItem(currentPlayerItem: currentItem)
     }
     
@@ -78,7 +78,7 @@ class AudioPlayer {
         guard let url = URL(string: urlString) else { return }
         let playerItem = AVPlayerItem(url: url)
         DispatchQueue.main.async {
-            self.queuePlayer?.replaceCurrentItem(with: playerItem)
+            self.avPlayer?.replaceCurrentItem(with: playerItem)
             self.observePlayerItem(currentPlayerItem: self.currentItem)
         }
     }
@@ -103,7 +103,7 @@ class AudioPlayer {
         self.observeItemPlayEnd(currentPlayerItem: currentPlayerItem)
     }
     
-    /// Tell the delegate didPlaybackEnd. If next item exist in AVQueuePlayer, observe next item.
+    /// Tell the delegate didPlaybackEnd.
     @objc func didPlaybackEnd() {
         playerState = .ended
         delegate?.didPlaybackEnd(self)
@@ -113,13 +113,13 @@ class AudioPlayer {
     
     /// Start observe currentTime.
     func addPeriodicTimeObserver() {
-        guard let queuePlayer = queuePlayer else { return }
+        guard let avPlayer = avPlayer else { return }
         // Invoke callback every half second
         let interval = CMTime(seconds: 0.5,
                               preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         // Add time observer. Invoke closure on the main queue.
         timeObserverToken =
-        queuePlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) {
+        avPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) {
             [weak self] time in
             guard let self = self else { return }
             // update player transport UI
@@ -129,25 +129,25 @@ class AudioPlayer {
     
     /// Stop observe currentTime.
     func removePeriodicTimeObserver() {
-        guard let queuePlayer = queuePlayer else { return }
+        guard let avPlayer = avPlayer else { return }
         if let token = timeObserverToken {
-            queuePlayer.removeTimeObserver(token)
+            avPlayer.removeTimeObserver(token)
             timeObserverToken = nil
         }
     }
     
     /// Call this method when user is in the process of dragging progress bar slider.
     func slideToTime(_ sliderValue: Double) {
-        guard let queuePlayer = queuePlayer,
+        guard let avPlayer = avPlayer,
               let duration = self.currentItemDuration else { return }
         let seekCMTime = TimeManager.getCMTime(from: sliderValue, duration: duration)
-        queuePlayer.seek(to: seekCMTime)
+        avPlayer.seek(to: seekCMTime)
         delegate?.updateCurrentTime(self, currentTime: seekCMTime)
     }
     
     /// Call this method when user end dragging progress bar slider.
     func sliderTouchEnded(_ sliderValue: Double) {
-        guard let queuePlayer = queuePlayer,
+        guard let avPlayer = avPlayer,
               let currentItem = currentItem,
               let currentItemDuration = currentItemDuration else { return }
 
@@ -167,7 +167,7 @@ class AudioPlayer {
         }
 
         // Drag to middle, but needs time buffering.
-        bufferingForSeconds(playerItem: currentItem, player: queuePlayer)
+        bufferingForSeconds(playerItem: currentItem, player: avPlayer)
     }
     
     /// Set a timer to check if AVPlayerItem.isPlaybackLikelyToKeepUp. If yes, then will play, but if not, will recall this method again.
@@ -189,25 +189,25 @@ class AudioPlayer {
     
     /// Pause player, let player control keep existing on screen.(Call this method when buffering.)
     func cancelPlay(player: AVPlayer) {
-        guard let queuePlayer = queuePlayer else { return }
-        queuePlayer.pause()
+        guard let avPlayer = avPlayer else { return }
+        avPlayer.pause()
         playerState = .pause
         bufferTimer?.cancel()
     }
     
-    /// Play player, update player UI, let player control auto hide.
+    /// Play player, update player UI.
     func playPlayer() {
-        guard let queuePlayer = queuePlayer else { return }
-        queuePlayer.play()
+        guard let avPlayer = avPlayer else { return }
+        avPlayer.play()
         self.playerState = .playing
         self.addPeriodicTimeObserver()
         self.delegate?.togglePlayButtonImage(self, playButtonType: .pause)
     }
     
-    /// Pause player, update player UI, let player control keep existing on screen.(Call this method when user's intension to pause player.)
+    /// Pause player, update player UI.(Call this method when user's intension to pause player.)
     func pausePlayer() {
-        guard let queuePlayer = queuePlayer else { return }
-        queuePlayer.pause()
+        guard let avPlayer = avPlayer else { return }
+        avPlayer.pause()
         playerState = .pause
         removePeriodicTimeObserver()
         self.delegate?.togglePlayButtonImage(self, playButtonType: .play)
@@ -229,7 +229,7 @@ class AudioPlayer {
     }
     
     func releasePlayer() {
-        queuePlayer = nil
+        avPlayer = nil
         bufferTimer = nil
         timeObserverToken = nil
         isPlaybackBufferEmptyObserver = nil
