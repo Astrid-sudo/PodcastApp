@@ -18,6 +18,9 @@
 		56346EBD27B4E9E900AECA6D /* HomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EBC27B4E9E900AECA6D /* HomePageViewController.swift */; };
 		56346EC027B4EAA400AECA6D /* HomePageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EBF27B4EAA400AECA6D /* HomePageViewModel.swift */; };
 		56346EC327B4EAE800AECA6D /* RssFeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EC227B4EAE800AECA6D /* RssFeedModel.swift */; };
+		56346EC527B4F09100AECA6D /* EpisodePageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EC427B4F09100AECA6D /* EpisodePageViewModel.swift */; };
+		56346EC727B4F1A600AECA6D /* EpisodePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EC627B4F1A600AECA6D /* EpisodePageViewController.swift */; };
+		56346EC927B4F25600AECA6D /* EpisodePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EC827B4F25600AECA6D /* EpisodePageView.swift */; };
 		850CE8B3780FA486D76CD736 /* Pods_PodcastApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCD8FC6EABEDA682D10FEF7 /* Pods_PodcastApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +40,9 @@
 		56346EBC27B4E9E900AECA6D /* HomePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePageViewController.swift; sourceTree = "<group>"; };
 		56346EBF27B4EAA400AECA6D /* HomePageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePageViewModel.swift; sourceTree = "<group>"; };
 		56346EC227B4EAE800AECA6D /* RssFeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RssFeedModel.swift; sourceTree = "<group>"; };
+		56346EC427B4F09100AECA6D /* EpisodePageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePageViewModel.swift; sourceTree = "<group>"; };
+		56346EC627B4F1A600AECA6D /* EpisodePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePageViewController.swift; sourceTree = "<group>"; };
+		56346EC827B4F25600AECA6D /* EpisodePageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePageView.swift; sourceTree = "<group>"; };
 		E3B1AB7522DC958A2AB53F81 /* Pods-PodcastApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PodcastApp.release.xcconfig"; path = "Target Support Files/Pods-PodcastApp/Pods-PodcastApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -101,6 +107,7 @@
 			children = (
 				56346EB727B4E90100AECA6D /* HomePageTableViewCell.swift */,
 				56346EB927B4E99200AECA6D /* HomePageTableViewHeader.swift */,
+				56346EC827B4F25600AECA6D /* EpisodePageView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -109,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				56346EBC27B4E9E900AECA6D /* HomePageViewController.swift */,
+				56346EC627B4F1A600AECA6D /* EpisodePageViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -117,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				56346EBF27B4EAA400AECA6D /* HomePageViewModel.swift */,
+				56346EC427B4F09100AECA6D /* EpisodePageViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -264,11 +273,14 @@
 				56346EB827B4E90100AECA6D /* HomePageTableViewCell.swift in Sources */,
 				56346EBD27B4E9E900AECA6D /* HomePageViewController.swift in Sources */,
 				56346EB527B4E8BC00AECA6D /* Box.swift in Sources */,
+				56346EC727B4F1A600AECA6D /* EpisodePageViewController.swift in Sources */,
 				56346EC027B4EAA400AECA6D /* HomePageViewModel.swift in Sources */,
+				56346EC927B4F25600AECA6D /* EpisodePageView.swift in Sources */,
 				56346EA027B4E40200AECA6D /* AppDelegate.swift in Sources */,
 				56346EBA27B4E99200AECA6D /* HomePageTableViewHeader.swift in Sources */,
 				56346EC327B4EAE800AECA6D /* RssFeedModel.swift in Sources */,
 				56346EA227B4E40200AECA6D /* SceneDelegate.swift in Sources */,
+				56346EC527B4F09100AECA6D /* EpisodePageViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

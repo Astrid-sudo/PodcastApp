@@ -14,7 +14,7 @@ class HomePageViewController: UIViewController {
     let homePageViewModel = HomePageViewModel()
     
     // MARK: - UI properties
-
+    
     private lazy var tableView: UITableView = {
         let table = UITableView(frame: CGRect(), style: .grouped)
         table.backgroundColor = .clear
@@ -45,7 +45,7 @@ class HomePageViewController: UIViewController {
         binding()
         indicatorView.startAnimating()
     }
-
+    
     // MARK: - config UI method
     
     func setTableView() {
@@ -69,13 +69,27 @@ class HomePageViewController: UIViewController {
     }
     
     // MARK: - method
-
+    
     func binding() {
         homePageViewModel.rssFeedItems.bind { [weak self] _ in
             guard let self = self else { return }
             self.tableView.reloadData()
             self.indicatorView.stopAnimating()
         }
+        
+        homePageViewModel.episodePageViewModel.bind { [weak self] episodePageViewModel in
+            guard let self = self else { return }
+            if !episodePageViewModel.episodeDetails.isEmpty {
+                self.pushToEpisodePage(episodePageViewModel: episodePageViewModel)
+            }
+        }
+    }
+    
+    func pushToEpisodePage(episodePageViewModel: EpisodePageViewModel) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let episodePageViewController = storyboard.instantiateViewController(withIdentifier: EpisodePageViewController.reuseIdentifier) as? EpisodePageViewController else { return }
+        episodePageViewController.episodePageViewModel = episodePageViewModel
+        navigationController?.pushViewController(episodePageViewController, animated: true)
     }
     
 }

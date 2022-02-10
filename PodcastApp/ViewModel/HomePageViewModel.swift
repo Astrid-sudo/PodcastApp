@@ -21,8 +21,11 @@ class HomePageViewModel: NSObject {
     let rssFeedModel = RssFeedModel()
     let rssFeedItems: Box<[RSSFeedItem]> = Box([RSSFeedItem]())
     var rssFeedTitle: String?
-    var homeImageURL: URL? 
+    var homeImageURL: URL?
     
+    var episodePageViewModel: Box<EpisodePageViewModel> = Box(EpisodePageViewModel())
+    
+    // MARK: - init
     
     override init() {
         super.init()
@@ -37,6 +40,22 @@ class HomePageViewModel: NSObject {
                 print(error)
             }
         }
+    }
+    
+    // MARK: - method
+    
+    func transformToEpisodeDetails(rssFeedItems:[RSSFeedItem],
+                                   podcastTitle: String,
+                                   epImage: UIImage) -> [EpisodeDetail] {
+        
+        let episodeDetails = rssFeedItems.map {
+            EpisodeDetail(podcastTitile: podcastTitle,
+                          epTitle: $0.title,
+                          epImage: epImage,
+                          epDescription: $0.description,
+                          audioLinkUrl: $0.enclosure?.attributes?.url)
+        }
+        return episodeDetails
     }
     
 }
@@ -92,6 +111,21 @@ extension HomePageViewModel: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        let row = indexPath.row
+        
+        var myImage: UIImage?
+        if let homeImageURL = URL(string: (rssFeedItems.value[row].iTunes?.iTunesImage?.attributes?.href)!) {
+            if let data = try? Data(contentsOf: homeImageURL) {
+                myImage = UIImage(data: data)
+            }
+        }
+        
+        guard let myImage = myImage,
+        let rssFeedTitle = rssFeedTitle else { return }
+        let episodeDetails = transformToEpisodeDetails(rssFeedItems: rssFeedItems.value, podcastTitle: rssFeedTitle, epImage: myImage)
+        
+        let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: row)
+        self.episodePageViewModel.value = episodeViewModel
     }
 
 }
