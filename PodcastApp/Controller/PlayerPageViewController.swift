@@ -91,14 +91,37 @@ class PlayerPageViewController: UIViewController {
 // MARK: - PlayerPageViewDelegate
 
 extension PlayerPageViewController: PlayerPageViewDelegate {
-   
+    
     func pauseToSeek(_ playerPageView: PlayerPageView) {
+        guard let playerPageViewModel = playerPageViewModel else { return }
+        playerPageViewModel.pausePlayer()
     }
     
     func handleTap(_ playerPageView: PlayerPageView, tapType: PlayerPageViewTapType) {
+        
+        guard let playerPageViewModel = playerPageViewModel else { return }
+        
+        switch tapType {
+            
+        case .togglePlay:
+            playerPageViewModel.togglePlay()
+            
+        case .switchItem(let switchType):
+            playerPageViewModel.switchToItem(switchType)
+            
+        }
     }
     
     func handleSliderEvent(_ playerPageView: PlayerPageView, sliderEventType: PlayerPageViewSliderEventType) {
+        guard let playerPageViewModel = playerPageViewModel else { return }
+        
+        switch sliderEventType {
+        case .progressValueChange(let sliderValue):
+            playerPageViewModel.slideToTime(Double(sliderValue))
+        case .progressTouchEnd(let sliderValue):
+            playerPageViewModel.sliderTouchEnded(Double(sliderValue))
+        }
+        
     }
     
 }
