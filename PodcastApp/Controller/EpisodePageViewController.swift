@@ -80,11 +80,23 @@ class EpisodePageViewController: UIViewController {
         }
     }
     
+    func presentPlayerPage(playerPageViewModel: PlayerPageViewModel) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let playerPageViewController = storyboard.instantiateViewController(withIdentifier: PlayerPageViewController.reuseIdentifier) as? PlayerPageViewController else { return }
+        playerPageViewController.playerPageViewModel = playerPageViewModel
+        present(playerPageViewController, animated: true)
+    }
+    
 }
+
+// MARK: - EpisodePageViewDelegate
 
 extension EpisodePageViewController: EpisodePageViewDelegate {
     
     func handleTap(_ episodePageView: EpisodePageView) {
+        guard let episodePageViewModel = episodePageViewModel else { return }
+        let playerPageViewModel = episodePageViewModel.createPlayerPageViewModel()
+        presentPlayerPage(playerPageViewModel: playerPageViewModel)
     }
     
 }

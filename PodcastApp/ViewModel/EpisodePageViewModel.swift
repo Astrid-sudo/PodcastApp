@@ -8,6 +8,12 @@
 import UIKit
 import FeedKit
 
+struct PlayerDetail {
+    let epTitle: String?
+    let epImage: UIImage?
+    let audioLinkUrl: String?
+}
+
 class EpisodePageViewModel {
     
     // MARK: - properties be observed
@@ -30,6 +36,8 @@ class EpisodePageViewModel {
         parseFeedItem()
     }
     
+    init() {}
+    
     deinit {
         print("EpisodePageViewModel Deinit")
     }
@@ -49,7 +57,20 @@ class EpisodePageViewModel {
         self.epImage.value = epImage
         self.epDescription.value = epDescription
     }
-
-    init() {}
+    
+    func createPlayerPageViewModel() -> PlayerPageViewModel {
+        let playerDetails = transformToPlayerDetails(episodeDetails: episodeDetails)
+        let playerPageViewModel = PlayerPageViewModel(playerDetails: playerDetails, currentEpisodeIndex: currentEpisodeIndex)
+        return playerPageViewModel
+    }
+    
+    func transformToPlayerDetails(episodeDetails:[EpisodeDetail]) -> [PlayerDetail] {
+        let playerDetails = episodeDetails.map {
+            PlayerDetail(epTitle: $0.epTitle,
+                         epImage: $0.epImage,
+                         audioLinkUrl: $0.audioLinkUrl)
+        }
+        return playerDetails
+    }
     
 }

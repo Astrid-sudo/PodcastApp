@@ -21,6 +21,9 @@
 		56346EC527B4F09100AECA6D /* EpisodePageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EC427B4F09100AECA6D /* EpisodePageViewModel.swift */; };
 		56346EC727B4F1A600AECA6D /* EpisodePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EC627B4F1A600AECA6D /* EpisodePageViewController.swift */; };
 		56346EC927B4F25600AECA6D /* EpisodePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EC827B4F25600AECA6D /* EpisodePageView.swift */; };
+		56346ECB27B4F52500AECA6D /* PlayerPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ECA27B4F52500AECA6D /* PlayerPageViewModel.swift */; };
+		56346ECD27B4F5AD00AECA6D /* PlayerPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ECC27B4F5AD00AECA6D /* PlayerPageViewController.swift */; };
+		56346ECF27B4F60300AECA6D /* PlayerPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ECE27B4F60300AECA6D /* PlayerPageView.swift */; };
 		850CE8B3780FA486D76CD736 /* Pods_PodcastApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCD8FC6EABEDA682D10FEF7 /* Pods_PodcastApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +46,9 @@
 		56346EC427B4F09100AECA6D /* EpisodePageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePageViewModel.swift; sourceTree = "<group>"; };
 		56346EC627B4F1A600AECA6D /* EpisodePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePageViewController.swift; sourceTree = "<group>"; };
 		56346EC827B4F25600AECA6D /* EpisodePageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePageView.swift; sourceTree = "<group>"; };
+		56346ECA27B4F52500AECA6D /* PlayerPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPageViewModel.swift; sourceTree = "<group>"; };
+		56346ECC27B4F5AD00AECA6D /* PlayerPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPageViewController.swift; sourceTree = "<group>"; };
+		56346ECE27B4F60300AECA6D /* PlayerPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPageView.swift; sourceTree = "<group>"; };
 		E3B1AB7522DC958A2AB53F81 /* Pods-PodcastApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PodcastApp.release.xcconfig"; path = "Target Support Files/Pods-PodcastApp/Pods-PodcastApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -108,6 +114,7 @@
 				56346EB727B4E90100AECA6D /* HomePageTableViewCell.swift */,
 				56346EB927B4E99200AECA6D /* HomePageTableViewHeader.swift */,
 				56346EC827B4F25600AECA6D /* EpisodePageView.swift */,
+				56346ECE27B4F60300AECA6D /* PlayerPageView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -117,6 +124,7 @@
 			children = (
 				56346EBC27B4E9E900AECA6D /* HomePageViewController.swift */,
 				56346EC627B4F1A600AECA6D /* EpisodePageViewController.swift */,
+				56346ECC27B4F5AD00AECA6D /* PlayerPageViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -126,6 +134,7 @@
 			children = (
 				56346EBF27B4EAA400AECA6D /* HomePageViewModel.swift */,
 				56346EC427B4F09100AECA6D /* EpisodePageViewModel.swift */,
+				56346ECA27B4F52500AECA6D /* PlayerPageViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -276,9 +285,12 @@
 				56346EC727B4F1A600AECA6D /* EpisodePageViewController.swift in Sources */,
 				56346EC027B4EAA400AECA6D /* HomePageViewModel.swift in Sources */,
 				56346EC927B4F25600AECA6D /* EpisodePageView.swift in Sources */,
+				56346ECB27B4F52500AECA6D /* PlayerPageViewModel.swift in Sources */,
 				56346EA027B4E40200AECA6D /* AppDelegate.swift in Sources */,
 				56346EBA27B4E99200AECA6D /* HomePageTableViewHeader.swift in Sources */,
 				56346EC327B4EAE800AECA6D /* RssFeedModel.swift in Sources */,
+				56346ECF27B4F60300AECA6D /* PlayerPageView.swift in Sources */,
+				56346ECD27B4F5AD00AECA6D /* PlayerPageViewController.swift in Sources */,
 				56346EA227B4E40200AECA6D /* SceneDelegate.swift in Sources */,
 				56346EC527B4F09100AECA6D /* EpisodePageViewModel.swift in Sources */,
 			);
