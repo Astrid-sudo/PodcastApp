@@ -47,6 +47,7 @@ class AudioPlayer {
     }
     
     var bufferTimer: BufferTimer?
+    var gcdTimer: GCDTimer?
     
     var timeObserverToken: Any?
     
@@ -170,23 +171,24 @@ class AudioPlayer {
               playerState != .failed else { return }
         self.cancelPlay(player: player)
         playerState = .buffering
-        bufferTimer = BufferTimer(interval: 0, delaySecs: 3.0, repeats: false, action: { [weak self] _ in
+        gcdTimer = GCDTimer(timeout: 3.0, repeat: false, completion: { [weak self] in
             guard let self = self else { return }
             if playerItem.isPlaybackLikelyToKeepUp {
                 self.playPlayer()
             } else {
                 self.bufferingForSeconds(playerItem: playerItem, player: player)
             }
-        })
-        bufferTimer?.start()
+        }, queue: .main)
+        gcdTimer?.start()
     }
+
     
     /// Pause player, let player control keep existing on screen.(Call this method when buffering.)
     func cancelPlay(player: AVPlayer) {
         guard let avPlayer = avPlayer else { return }
         avPlayer.pause()
         playerState = .pause
-        bufferTimer?.cancel()
+        gcdTimer?.invalidate()
     }
     
     /// Play player, update player UI.
@@ -224,7 +226,7 @@ class AudioPlayer {
     
     func releasePlayer() {
         avPlayer = nil
-        bufferTimer = nil
+        gcdTimer = nil
         timeObserverToken = nil
         statusObserve = nil
     }
