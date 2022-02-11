@@ -25,17 +25,6 @@ struct TimeManager {
         return timecodeString
     }
     
-    /// Transfer slider value on progress bar to CMTime.
-    /// - Parameters:
-    ///   - sliderValue: The value of progress bar.
-    ///   - duration: The duration of current player item.
-    /// - Returns: CMTime which represent the slider value.
-    static func getCMTime(from sliderValue: Double, duration: CMTime) -> CMTime {
-        let durationSeconds = CMTimeGetSeconds(duration)
-        let seekTime = durationSeconds * sliderValue
-        return CMTimeMake(value: Int64(ceil(seekTime)), timescale: 1)
-    }
-
 }
 
 

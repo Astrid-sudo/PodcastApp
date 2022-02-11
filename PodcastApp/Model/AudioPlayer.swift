@@ -50,12 +50,6 @@ class AudioPlayer {
     
     var timeObserverToken: Any?
     
-    var isPlaybackBufferEmptyObserver: NSKeyValueObservation?
-    
-    var isPlaybackBufferFullObserver: NSKeyValueObservation?
-    
-    var isPlaybackLikelyToKeepUpObserver: NSKeyValueObservation?
-    
     var statusObserve: NSKeyValueObservation?
     
     weak var delegate: AudioPlayerProtocol?
@@ -140,7 +134,7 @@ class AudioPlayer {
     func slideToTime(_ sliderValue: Double) {
         guard let avPlayer = avPlayer,
               let duration = self.currentItemDuration else { return }
-        let seekCMTime = TimeManager.getCMTime(from: sliderValue, duration: duration)
+        let seekCMTime = CMTimeMultiplyByFloat64(duration, multiplier: sliderValue)
         avPlayer.seek(to: seekCMTime)
         delegate?.updateCurrentTime(self, currentTime: seekCMTime)
     }
@@ -232,9 +226,6 @@ class AudioPlayer {
         avPlayer = nil
         bufferTimer = nil
         timeObserverToken = nil
-        isPlaybackBufferEmptyObserver = nil
-        isPlaybackBufferFullObserver = nil
-        isPlaybackLikelyToKeepUpObserver = nil
         statusObserve = nil
     }
     

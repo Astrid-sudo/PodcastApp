@@ -27,6 +27,7 @@
 		56346ED127B4FB8300AECA6D /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ED027B4FB8300AECA6D /* AudioPlayer.swift */; };
 		56346ED327B4FBCF00AECA6D /* TimeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ED227B4FBCF00AECA6D /* TimeManager.swift */; };
 		56346ED527B4FC0000AECA6D /* BufferTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ED427B4FC0000AECA6D /* BufferTimer.swift */; };
+		56346EDF27B54E4000AECA6D /* TimeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 56346EDE27B54E4000AECA6D /* TimeCalculator.m */; };
 		850CE8B3780FA486D76CD736 /* Pods_PodcastApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCD8FC6EABEDA682D10FEF7 /* Pods_PodcastApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,9 @@
 		56346ED027B4FB8300AECA6D /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		56346ED227B4FBCF00AECA6D /* TimeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeManager.swift; sourceTree = "<group>"; };
 		56346ED427B4FC0000AECA6D /* BufferTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferTimer.swift; sourceTree = "<group>"; };
+		56346ED727B5116D00AECA6D /* PodcastApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PodcastApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		56346EDD27B54E4000AECA6D /* TimeCalculator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeCalculator.h; sourceTree = "<group>"; };
+		56346EDE27B54E4000AECA6D /* TimeCalculator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeCalculator.m; sourceTree = "<group>"; };
 		E3B1AB7522DC958A2AB53F81 /* Pods-PodcastApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PodcastApp.release.xcconfig"; path = "Target Support Files/Pods-PodcastApp/Pods-PodcastApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -152,6 +156,9 @@
 				56346ED027B4FB8300AECA6D /* AudioPlayer.swift */,
 				56346ED227B4FBCF00AECA6D /* TimeManager.swift */,
 				56346ED427B4FC0000AECA6D /* BufferTimer.swift */,
+				56346ED727B5116D00AECA6D /* PodcastApp-Bridging-Header.h */,
+				56346EDD27B54E4000AECA6D /* TimeCalculator.h */,
+				56346EDE27B54E4000AECA6D /* TimeCalculator.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -207,6 +214,7 @@
 				TargetAttributes = {
 					56346E9B27B4E40200AECA6D = {
 						CreatedOnToolsVersion = 13.0;
+						LastSwiftMigration = 1300;
 					};
 				};
 			};
@@ -291,6 +299,7 @@
 				56346EB827B4E90100AECA6D /* HomePageTableViewCell.swift in Sources */,
 				56346EBD27B4E9E900AECA6D /* HomePageViewController.swift in Sources */,
 				56346ED127B4FB8300AECA6D /* AudioPlayer.swift in Sources */,
+				56346EDF27B54E4000AECA6D /* TimeCalculator.m in Sources */,
 				56346EB527B4E8BC00AECA6D /* Box.swift in Sources */,
 				56346EC727B4F1A600AECA6D /* EpisodePageViewController.swift in Sources */,
 				56346EC027B4EAA400AECA6D /* HomePageViewModel.swift in Sources */,
@@ -452,6 +461,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XN354JRCK2;
@@ -460,6 +470,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -470,6 +481,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Astrid.PodcastApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "PodcastApp/Model/PodcastApp-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -481,6 +494,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XN354JRCK2;
@@ -489,6 +503,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -499,6 +514,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Astrid.PodcastApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "PodcastApp/Model/PodcastApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

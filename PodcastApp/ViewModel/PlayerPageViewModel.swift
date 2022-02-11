@@ -67,13 +67,15 @@ class PlayerPageViewModel {
     }
     
     func changeCurrentTime(currentTime: CMTime) {
-        let currenTimeSeconds = CMTimeGetSeconds(currentTime)
-        self.currentTime.value = TimeManager.floatToTimecodeString(seconds: Float(currenTimeSeconds)) + " /"
+        var currenTimeSeconds = Float(CMTimeGetSeconds(currentTime))
+        let floatPointer = UnsafeMutablePointer<Float>(&currenTimeSeconds)
+        self.currentTime.value = TimeCalculator.float(toTimecodeString: floatPointer)
     }
     
     func changeDuration(duration: CMTime) {
-        let durationSeconds = CMTimeGetSeconds(duration)
-        self.duration.value = TimeManager.floatToTimecodeString(seconds: Float(durationSeconds))
+        var durationSeconds = Float(CMTimeGetSeconds(duration))
+        let floatPointer = UnsafeMutablePointer<Float>(&durationSeconds)
+        self.duration.value = TimeCalculator.float(toTimecodeString: floatPointer)
     }
     
     func changeProgress(currentTime: CMTime, duration: CMTime) {
