@@ -18,8 +18,8 @@ struct EpisodeDetail {
 
 class HomePageViewModel: NSObject {
     
-    let rssFeedModel = RssFeedModel()
-    let rssFeedItems: Box<[RSSFeedItem]> = Box([RSSFeedItem]())
+    let rssHelper = RssHelper()
+    let rssFeedItems: Box<[RssItem]> = Box([RssItem]())
     var rssFeedTitle: String?
     var homeImageURL: URL?
     
@@ -29,31 +29,22 @@ class HomePageViewModel: NSObject {
     
     override init() {
         super.init()
-        rssFeedModel.fetchRss { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let rssFeed):
-                self.rssFeedItems.value = rssFeed.items!
-                self.rssFeedTitle = rssFeed.title
-                self.homeImageURL = URL(string: (rssFeed.iTunes?.iTunesImage?.attributes?.href)!)
-            case .failure(let error):
-                print(error)
-            }
-        }
+        rssHelper?.delegate = self
+        rssHelper?.parsefeed(withUrlString: "https://feeds.soundcloud.com/users/soundcloud:users:322164009/sounds.rss")
     }
     
     // MARK: - method
     
-    func transformToEpisodeDetails(rssFeedItems:[RSSFeedItem],
+    func transformToEpisodeDetails(rssFeedItems:[RssItem],
                                    podcastTitle: String,
                                    epImage: UIImage) -> [EpisodeDetail] {
         
         let episodeDetails = rssFeedItems.map {
             EpisodeDetail(podcastTitile: podcastTitle,
-                          epTitle: $0.title,
+                          epTitle: $0.rssTitle as String,
                           epImage: epImage,
-                          epDescription: $0.description,
-                          audioLinkUrl: $0.enclosure?.attributes?.url)
+                          epDescription: $0.rssDescription as String,
+                          audioLinkUrl: $0.rssAudioUrl)
         }
         return episodeDetails
     }
@@ -72,17 +63,15 @@ extension HomePageViewModel: UITableViewDataSource {
         let row = indexPath.row
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomePageTableViewCell.reuseIdentifier) as? HomePageTableViewCell else { return UITableViewCell()}
         var epImage: UIImage?
-        if let urlString = rssFeedItems.value[row].iTunes?.iTunesImage?.attributes?.href {
-            if let url = URL(string: urlString) {
+            if let url = URL(string: rssFeedItems.value[row].rssEpImageUrl) {
                 if let data = try? Data(contentsOf: url) {
                     epImage = UIImage(data: data)
                 }
             }
-        }
         
         cell.configCell(image: epImage,
-                        epTitle: rssFeedItems.value[row].title,
-                        updateDate: rssFeedItems.value[row].pubDate?.ISO8601Format())
+                        epTitle: rssFeedItems.value[row].rssTitle as String,
+                        updateDate: rssFeedItems.value[row].rssPubDate as String)
         return cell
     }
     
@@ -114,7 +103,7 @@ extension HomePageViewModel: UITableViewDelegate {
         let row = indexPath.row
         
         var myImage: UIImage?
-        if let homeImageURL = URL(string: (rssFeedItems.value[row].iTunes?.iTunesImage?.attributes?.href)!) {
+        if let homeImageURL = URL(string: rssFeedItems.value[row].rssEpImageUrl) {
             if let data = try? Data(contentsOf: homeImageURL) {
                 myImage = UIImage(data: data)
             }
@@ -128,4 +117,21 @@ extension HomePageViewModel: UITableViewDelegate {
         self.episodePageViewModel.value = episodeViewModel
     }
 
+}
+
+// MARK: - RssHelperDelegate
+
+extension HomePageViewModel: RssHelperDelegate {
+    
+    func suceededFetchRss(_ rssItems: [Any], infoTitle: NSMutableString, infoImage: String) {
+        let rssItemArray = rssItems.compactMap({ $0 as? RssItem})
+        self.rssFeedItems.value = rssItemArray
+        self.rssFeedTitle = String(infoTitle)
+        self.homeImageURL = URL(string: infoImage)
+    }
+    
+    func failedFetchRss() {
+    }
+    
+    
 }

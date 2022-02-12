@@ -50,16 +50,6 @@ _Pragma("clang diagnostic pop")
     return self;
 }
 
-+ (GCDTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)timeout
-                                     repeats:(BOOL)repeats
-                                  completion:(dispatch_block_t)completion
-                                       queue:(dispatch_queue_t)queue {
-    return [[GCDTimer alloc] initWithTimeout:timeout
-                                      repeat:repeats
-                                  completion:completion
-                                       queue:queue];
-}
-
 - (void)dealloc {
     if (_timer != nil) {
         dispatch_source_cancel(_timer);

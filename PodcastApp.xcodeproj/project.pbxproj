@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5605AA7827B79A8700759B21 /* RssItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5605AA7727B79A8700759B21 /* RssItem.m */; };
 		56346EA027B4E40200AECA6D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346E9F27B4E40200AECA6D /* AppDelegate.swift */; };
 		56346EA227B4E40200AECA6D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346EA127B4E40200AECA6D /* SceneDelegate.swift */; };
 		56346EA727B4E40200AECA6D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56346EA527B4E40200AECA6D /* Main.storyboard */; };
@@ -27,12 +28,15 @@
 		56346ED127B4FB8300AECA6D /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ED027B4FB8300AECA6D /* AudioPlayer.swift */; };
 		56346EDF27B54E4000AECA6D /* TimeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 56346EDE27B54E4000AECA6D /* TimeCalculator.m */; };
 		56346EE227B5500400AECA6D /* GCDTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 56346EE127B5500400AECA6D /* GCDTimer.m */; };
+		564A802F27B664130084F5E3 /* RssHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 564A802E27B664130084F5E3 /* RssHelper.m */; };
 		850CE8B3780FA486D76CD736 /* Pods_PodcastApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCD8FC6EABEDA682D10FEF7 /* Pods_PodcastApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0BCD8FC6EABEDA682D10FEF7 /* Pods_PodcastApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PodcastApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		455B7B37167DE4EF4F33A5AB /* Pods-PodcastApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PodcastApp.debug.xcconfig"; path = "Target Support Files/Pods-PodcastApp/Pods-PodcastApp.debug.xcconfig"; sourceTree = "<group>"; };
+		5605AA7627B79A8700759B21 /* RssItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RssItem.h; sourceTree = "<group>"; };
+		5605AA7727B79A8700759B21 /* RssItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RssItem.m; sourceTree = "<group>"; };
 		56346E9C27B4E40200AECA6D /* PodcastApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PodcastApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56346E9F27B4E40200AECA6D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56346EA127B4E40200AECA6D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -58,6 +62,8 @@
 		56346EDE27B54E4000AECA6D /* TimeCalculator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeCalculator.m; sourceTree = "<group>"; };
 		56346EE027B5500400AECA6D /* GCDTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDTimer.h; sourceTree = "<group>"; };
 		56346EE127B5500400AECA6D /* GCDTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDTimer.m; sourceTree = "<group>"; };
+		564A802D27B664130084F5E3 /* RssHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RssHelper.h; sourceTree = "<group>"; };
+		564A802E27B664130084F5E3 /* RssHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RssHelper.m; sourceTree = "<group>"; };
 		E3B1AB7522DC958A2AB53F81 /* Pods-PodcastApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PodcastApp.release.xcconfig"; path = "Target Support Files/Pods-PodcastApp/Pods-PodcastApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -158,6 +164,10 @@
 				56346EDE27B54E4000AECA6D /* TimeCalculator.m */,
 				56346EE027B5500400AECA6D /* GCDTimer.h */,
 				56346EE127B5500400AECA6D /* GCDTimer.m */,
+				564A802D27B664130084F5E3 /* RssHelper.h */,
+				564A802E27B664130084F5E3 /* RssHelper.m */,
+				5605AA7627B79A8700759B21 /* RssItem.h */,
+				5605AA7727B79A8700759B21 /* RssItem.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -296,6 +306,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56346EB827B4E90100AECA6D /* HomePageTableViewCell.swift in Sources */,
+				564A802F27B664130084F5E3 /* RssHelper.m in Sources */,
 				56346EBD27B4E9E900AECA6D /* HomePageViewController.swift in Sources */,
 				56346ED127B4FB8300AECA6D /* AudioPlayer.swift in Sources */,
 				56346EDF27B54E4000AECA6D /* TimeCalculator.m in Sources */,
@@ -308,6 +319,7 @@
 				56346EBA27B4E99200AECA6D /* HomePageTableViewHeader.swift in Sources */,
 				56346EC327B4EAE800AECA6D /* RssFeedModel.swift in Sources */,
 				56346ECF27B4F60300AECA6D /* PlayerPageView.swift in Sources */,
+				5605AA7827B79A8700759B21 /* RssItem.m in Sources */,
 				56346ECD27B4F5AD00AECA6D /* PlayerPageViewController.swift in Sources */,
 				56346EA227B4E40200AECA6D /* SceneDelegate.swift in Sources */,
 				56346EE227B5500400AECA6D /* GCDTimer.m in Sources */,
@@ -372,6 +384,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -433,6 +446,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -462,6 +476,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = XN354JRCK2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PodcastApp/Info.plist;
@@ -495,6 +510,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = XN354JRCK2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PodcastApp/Info.plist;

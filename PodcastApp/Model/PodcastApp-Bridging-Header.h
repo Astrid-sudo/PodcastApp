@@ -4,4 +4,5 @@
 
 #import "TimeCalculator.h"
 #import "GCDTimer.h"
+#import "RssHelper.h"
 
