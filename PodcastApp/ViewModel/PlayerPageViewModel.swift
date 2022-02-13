@@ -115,8 +115,16 @@ class PlayerPageViewModel: NSObject {
 
 extension PlayerPageViewModel: AudioPlayHelperDelegate {
     
-    func toggleButtonImage(_ audioPlayHelper: AudioPlayHelper, playerState: String) {
-        if playerState == "play" {
+    func toggleButtonImage(_ audioPlayHelper: AudioPlayHelper, playerState: Int) {
+        if playerState == 2 {
+            self.playButtonType.value = .pause
+        } else {
+            self.playButtonType.value = .play
+        }
+    }
+
+    func toggleButtonImage(_ audioPlayHelper: AudioPlayHelper, playerState: PlayerState) {
+        if playerState == .playing {
             self.playButtonType.value = .pause
         } else {
             self.playButtonType.value = .play

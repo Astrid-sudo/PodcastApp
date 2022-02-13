@@ -12,7 +12,7 @@
 
 @class AudioPlayHelper;
 
-typedef NS_ENUM(NSUInteger, PlayerState) {
+typedef NS_ENUM(NSInteger, PlayerState) {
     PlayerStateUnknow,
     PlayerStateReadyToPlay,
     PlayerStatePlaying,
@@ -25,13 +25,14 @@ typedef NS_ENUM(NSUInteger, PlayerState) {
 @protocol AudioPlayHelperDelegate <NSObject>
 @required
 
-- (void)toggleButtonImage:(AudioPlayHelper *)audioPlayHelper playerState:(NSString*)playerState;
-
 - (void)updateDuration:(AudioPlayHelper *)audioPlayHelper duration:(CMTime)duration;
 
 - (void)updateCurrentTime:(AudioPlayHelper *)audioPlayHelper currentTime:(CMTime)currentTime;
 
 - (void)didPlaybackEnd:(AudioPlayHelper *)audioPlayHelper;
+
+- (void)toggleButtonImage:(AudioPlayHelper *)audioPlayHelper playerState:(NSInteger)playerState;
+
 
 @end
 

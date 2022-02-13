@@ -8,7 +8,6 @@
 #import "AudioPlayHelper.h"
 
 
-
 @implementation AudioPlayHelper
 
 
@@ -111,8 +110,8 @@ change:(NSDictionary *)change context:(void *)context {
 
     if (sliderValue == 1.0) {
         [_delegate updateCurrentTime:self currentTime:duration];
-        [_delegate toggleButtonImage:self playerState:@"pause"];
         playerState = PlayerStateEnded;
+        [_delegate toggleButtonImage:self playerState:playerState];
         [self removePeriodicTimeObserver];
         return;
     }
@@ -150,14 +149,14 @@ change:(NSDictionary *)change context:(void *)context {
     [_avPlayer play];
     playerState = PlayerStatePlaying;
     [self addPeriodicTimeObserver];
-    [_delegate toggleButtonImage:self playerState:@"play"];
+    [_delegate toggleButtonImage:self playerState:playerState];
 }
 
 - (void)pausePlayer {
     [_avPlayer pause];
     playerState = PlayerStatePause;
     [self removePeriodicTimeObserver];
-    [_delegate toggleButtonImage:self playerState:@"pause"];
+    [_delegate toggleButtonImage:self playerState:playerState];
 }
 
 - (void)togglePlay {
