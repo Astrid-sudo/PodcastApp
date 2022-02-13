@@ -1,0 +1,207 @@
+//
+//  AudioPlayHelper.m
+//  PodcastApp
+//
+//  Created by Astrid on 2022/2/10.
+//
+
+#import "AudioPlayHelper.h"
+
+
+
+@implementation AudioPlayHelper
+
+// MARK: - init
+
+- (instancetype)init {
+    if ((self = [super init])) {
+        
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [_avPlayer.currentItem removeObserver:self forKeyPath:@"status"];
+    [_avPlayer removeTimeObserver:_timeObserverToken];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+// MARK: - method
+
+- (CMTime)currentItemCurrentTime {
+    return _avPlayer.currentItem.currentTime;
+}
+
+- (CMTime)currentItemDuration {
+    return _avPlayer.currentItem.duration;
+}
+
+// MARK: - player item method
+
+- (void)configPlayer: (NSString*) urlString {
+    NSURL *url = [NSURL URLWithString:urlString];
+    _avPlayer = [[AVPlayer alloc] initWithURL:url];
+    [self observePlayerItem:_avPlayer.currentItem];
+}
+
+- (void)replaceCurrentItem: (NSString*) urlString {
+    NSURL *url = [NSURL URLWithString:urlString];
+    AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:url];
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        [_avPlayer.currentItem removeObserver:self forKeyPath:@"status"];
+        [_avPlayer replaceCurrentItemWithPlayerItem:playerItem];
+        [self observePlayerItem:_avPlayer.currentItem];
+    });
+}
+
+- (void)observeItemStatus: (AVPlayerItem*) currentPlayerItem {
+    [currentPlayerItem addObserver:self forKeyPath:@"status" options: NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew  context:nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
+change:(NSDictionary *)change context:(void *)context {
+    if([keyPath isEqualToString:@"status"]) {
+        [_delegate updateDuration:self duration:_avPlayer.currentItem.duration];
+    }
+};
+
+- (void)observeItemPlayEnd: (AVPlayerItem*) currentPlayerItem {
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didPlaybackEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:currentPlayerItem];
+}
+
+- (void)observePlayerItem: (AVPlayerItem*) currentPlayerItem {
+    [self observeItemStatus:_avPlayer.currentItem];
+    [self observeItemPlayEnd:_avPlayer.currentItem];
+}
+
+- (void)didPlaybackEnd:(NSNotification *)notification {
+    __weak typeof(self) weakSelf = self;
+    playerState = PlayerStateEnded;
+    [_delegate didPlaybackEnd:weakSelf];
+}
+
+// MARK: - player method
+
+- (void)addPeriodicTimeObserver {
+    CMTime interval = CMTimeMakeWithSeconds(0.5, NSEC_PER_SEC);
+    dispatch_queue_t mainQueue = dispatch_get_main_queue();
+    self.timeObserverToken =
+    [_avPlayer addPeriodicTimeObserverForInterval:interval
+                                                  queue:mainQueue
+                                             usingBlock:^(CMTime time) {
+        __weak typeof(self) weakSelf = self;
+        [_delegate updateCurrentTime:weakSelf currentTime:time];
+        }];
+}
+
+- (void)removePeriodicTimeObserver {
+    if (self.timeObserverToken) {
+        [_avPlayer removeTimeObserver:self.timeObserverToken];
+        self.timeObserverToken = nil;
+    }
+}
+
+- (void)slideToTime: (double) sliderValue {
+    CMTime duration = _avPlayer.currentItem.duration;
+    CMTime seekCMTime = CMTimeMultiplyByFloat64(duration, sliderValue);
+    [_avPlayer seekToTime:seekCMTime];
+    [_delegate updateCurrentTime:self currentTime:seekCMTime];
+}
+
+- (void)sliderTouchEnded: (double) sliderValue {
+    CMTime duration = _avPlayer.currentItem.duration;
+
+    if (sliderValue == 1.0) {
+        [_delegate updateCurrentTime:self currentTime:duration];
+        [_delegate toggleButtonImage:self playerState:@"pause"];
+        playerState = PlayerStateEnded;
+        [self removePeriodicTimeObserver];
+        return;
+    }
+    
+    if (_avPlayer.currentItem.isPlaybackLikelyToKeepUp) {
+        [self playPlayer];
+        return;
+    }
+    
+    [self bufferingForSeconds:_avPlayer.currentItem player:_avPlayer];
+}
+
+- (void)bufferingForSeconds: (AVPlayerItem*) playerItem player: (AVPlayer*) player {
+    if (playerState != PlayerStateFailed && playerItem.status == PlayerStateReadyToPlay) {
+        [self cancelPlay:_avPlayer];
+        playerState = PlayerStateBuffering;
+        _gcdTimer = [[GCDTimer alloc] initWithTimeout:3.0 repeat:false completion:^{
+            __weak typeof(self) weakSelf = self;
+            if (_avPlayer.currentItem.isPlaybackLikelyToKeepUp) {
+                [weakSelf playPlayer];
+            } else {
+                [weakSelf bufferingForSeconds:weakSelf.avPlayer.currentItem player:_avPlayer];
+            }
+        } queue:dispatch_get_main_queue()];
+    }
+}
+
+- (void)cancelPlay: (AVPlayer*) player {
+    [_avPlayer pause];
+    playerState = PlayerStatePause;
+    [_gcdTimer invalidate];
+}
+
+- (void)playPlayer {
+    [_avPlayer play];
+    playerState = PlayerStatePlaying;
+    [self addPeriodicTimeObserver];
+    [_delegate toggleButtonImage:self playerState:@"play"];
+}
+
+- (void)pausePlayer {
+    [_avPlayer pause];
+    playerState = PlayerStatePause;
+    [self removePeriodicTimeObserver];
+    [_delegate toggleButtonImage:self playerState:@"pause"];
+}
+
+- (void)togglePlay {
+    
+    switch (playerState) {
+            
+        case PlayerStateUnknow:
+            [self playPlayer];
+            break;
+            
+        case PlayerStateReadyToPlay:
+            [self playPlayer];
+            break;
+            
+        case PlayerStatePlaying:
+            [self pausePlayer];
+            break;
+            
+        case PlayerStateBuffering:
+            [self playPlayer];
+            break;
+            
+        case PlayerStateFailed:
+            [self playPlayer];
+            break;
+            
+        case PlayerStatePause:
+            [self playPlayer];
+            break;
+            
+        case PlayerStateEnded:
+            [self playPlayer];
+            break;
+    }
+}
+
+- (void)releasePlayer {
+    _avPlayer = nil;
+    _gcdTimer = nil;
+    _timeObserverToken = nil;
+    _statusObserve = nil;
+}
+
+
+@end

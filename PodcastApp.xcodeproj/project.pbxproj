@@ -26,6 +26,7 @@
 		56346ECD27B4F5AD00AECA6D /* PlayerPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ECC27B4F5AD00AECA6D /* PlayerPageViewController.swift */; };
 		56346ECF27B4F60300AECA6D /* PlayerPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ECE27B4F60300AECA6D /* PlayerPageView.swift */; };
 		56346ED127B4FB8300AECA6D /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56346ED027B4FB8300AECA6D /* AudioPlayer.swift */; };
+		56346EDC27B5204100AECA6D /* AudioPlayHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 56346EDB27B5204100AECA6D /* AudioPlayHelper.m */; };
 		56346EDF27B54E4000AECA6D /* TimeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 56346EDE27B54E4000AECA6D /* TimeCalculator.m */; };
 		56346EE227B5500400AECA6D /* GCDTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 56346EE127B5500400AECA6D /* GCDTimer.m */; };
 		564A802F27B664130084F5E3 /* RssHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 564A802E27B664130084F5E3 /* RssHelper.m */; };
@@ -58,6 +59,8 @@
 		56346ECE27B4F60300AECA6D /* PlayerPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPageView.swift; sourceTree = "<group>"; };
 		56346ED027B4FB8300AECA6D /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		56346ED727B5116D00AECA6D /* PodcastApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PodcastApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		56346EDA27B5204100AECA6D /* AudioPlayHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioPlayHelper.h; sourceTree = "<group>"; };
+		56346EDB27B5204100AECA6D /* AudioPlayHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioPlayHelper.m; sourceTree = "<group>"; };
 		56346EDD27B54E4000AECA6D /* TimeCalculator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeCalculator.h; sourceTree = "<group>"; };
 		56346EDE27B54E4000AECA6D /* TimeCalculator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeCalculator.m; sourceTree = "<group>"; };
 		56346EE027B5500400AECA6D /* GCDTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDTimer.h; sourceTree = "<group>"; };
@@ -159,6 +162,8 @@
 			children = (
 				56346EC227B4EAE800AECA6D /* RssFeedModel.swift */,
 				56346ED027B4FB8300AECA6D /* AudioPlayer.swift */,
+				56346EDA27B5204100AECA6D /* AudioPlayHelper.h */,
+				56346EDB27B5204100AECA6D /* AudioPlayHelper.m */,
 				56346ED727B5116D00AECA6D /* PodcastApp-Bridging-Header.h */,
 				56346EDD27B54E4000AECA6D /* TimeCalculator.h */,
 				56346EDE27B54E4000AECA6D /* TimeCalculator.m */,
@@ -308,6 +313,7 @@
 				56346EB827B4E90100AECA6D /* HomePageTableViewCell.swift in Sources */,
 				564A802F27B664130084F5E3 /* RssHelper.m in Sources */,
 				56346EBD27B4E9E900AECA6D /* HomePageViewController.swift in Sources */,
+				56346EDC27B5204100AECA6D /* AudioPlayHelper.m in Sources */,
 				56346ED127B4FB8300AECA6D /* AudioPlayer.swift in Sources */,
 				56346EDF27B54E4000AECA6D /* TimeCalculator.m in Sources */,
 				56346EB527B4E8BC00AECA6D /* Box.swift in Sources */,

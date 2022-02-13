@@ -3,6 +3,7 @@
 //
 
 #import "TimeCalculator.h"
+#import "AudioPlayHelper.h"
 #import "GCDTimer.h"
 #import "RssHelper.h"
 

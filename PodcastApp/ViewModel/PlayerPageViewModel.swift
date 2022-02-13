@@ -8,7 +8,7 @@
 import UIKit
 import CoreMedia
 
-class PlayerPageViewModel {
+class PlayerPageViewModel: NSObject {
     
     // MARK: - properties be observed
     
@@ -25,10 +25,11 @@ class PlayerPageViewModel {
     var currentEpisodeIndex = 0
     var audioLink = ""
     
-    private lazy var audioPlayer: AudioPlayer = {
-        let audioPlayer = AudioPlayer()
-        audioPlayer.delegate = self
-        return audioPlayer
+    
+    private lazy var audioPlayHelper: AudioPlayHelper? = {
+        let audioPlayHelper = AudioPlayHelper()
+        audioPlayHelper?.delegate = self
+        return audioPlayHelper
     }()
     
     // MARK: - init / deinit
@@ -36,14 +37,14 @@ class PlayerPageViewModel {
     init(playerDetails: [PlayerDetail], currentEpisodeIndex: Int) {
         self.playerDetails = playerDetails
         self.currentEpisodeIndex = currentEpisodeIndex
+        super.init()
         parsePlayerDetail()
         configPlayer()
     }
     
-    init() {}
     
     deinit {
-        audioPlayer.releasePlayer()
+        audioPlayHelper?.releasePlayer()
         print("PlayerPageModel Deinit")
     }
     
@@ -63,19 +64,17 @@ class PlayerPageViewModel {
     
     private func configPlayer() {
         guard let audioLinkUrl = playerDetails[currentEpisodeIndex].audioLinkUrl else { return }
-        audioPlayer.configQueuePlayer(audioLinkUrl)
+        audioPlayHelper?.configPlayer(audioLinkUrl)
     }
     
     func changeCurrentTime(currentTime: CMTime) {
-        var currenTimeSeconds = Float(CMTimeGetSeconds(currentTime))
-        let floatPointer = UnsafeMutablePointer<Float>(&currenTimeSeconds)
-        self.currentTime.value = TimeCalculator.float(toTimecodeString: floatPointer)
+        let currenTimeSeconds = Float(CMTimeGetSeconds(currentTime))
+        self.currentTime.value = TimeCalculator.float(toTimecodeString: currenTimeSeconds)
     }
     
     func changeDuration(duration: CMTime) {
-        var durationSeconds = Float(CMTimeGetSeconds(duration))
-        let floatPointer = UnsafeMutablePointer<Float>(&durationSeconds)
-        self.duration.value = TimeCalculator.float(toTimecodeString: floatPointer)
+        let durationSeconds = Float(CMTimeGetSeconds(duration))
+        self.duration.value = TimeCalculator.float(toTimecodeString: durationSeconds)
     }
     
     func changeProgress(currentTime: CMTime, duration: CMTime) {
@@ -88,7 +87,7 @@ class PlayerPageViewModel {
     // MARK: - player method
     
     func togglePlay() {
-        audioPlayer.togglePlay()
+        audioPlayHelper?.togglePlay()
     }
     
     func switchToItem(_ switchType: SwitchItemType) {
@@ -101,44 +100,46 @@ class PlayerPageViewModel {
     }
     
     func slideToTime(_ sliderValue: Double) {
-        audioPlayer.slideToTime(sliderValue)
+        audioPlayHelper?.slide(toTime: sliderValue)
     }
     
     func sliderTouchEnded(_ sliderValue: Double) {
-        audioPlayer.sliderTouchEnded(sliderValue)
+        audioPlayHelper?.sliderTouchEnded(sliderValue)
     }
     
     func pausePlayer() {
-        audioPlayer.pausePlayer()
+        audioPlayHelper?.pausePlayer()
     }
     
 }
 
-// MARK: - AudioPlayerProtocol
+// MARK: - AudioPlayHelperDelegate
 
-extension PlayerPageViewModel: AudioPlayerProtocol {
+extension PlayerPageViewModel: AudioPlayHelperDelegate {
     
-    func updateDuration(_ audioPlayer: AudioPlayer, duration: CMTime) {
+    func toggleButtonImage(_ audioPlayHelper: AudioPlayHelper, playerState: String) {
+        if playerState == "play" {
+            self.playButtonType.value = .pause
+        } else {
+            self.playButtonType.value = .play
+        }
+    }
+    
+    func updateDuration(_ audioPlayHelper: AudioPlayHelper, duration: CMTime) {
         changeDuration(duration: duration)
-        if let currentTime = audioPlayer.currentItemCurrentTime {
-            changeProgress(currentTime: currentTime, duration: duration)
-        }
+        let time = audioPlayHelper.currentItemCurrentTime()
+        changeProgress(currentTime: time, duration: duration)
     }
     
-    func updateCurrentTime(_ audioPlayer: AudioPlayer, currentTime: CMTime) {
+    func updateCurrentTime(_ audioPlayHelper: AudioPlayHelper, currentTime: CMTime) {
         changeCurrentTime(currentTime: currentTime)
-        if let duration = audioPlayer.currentItemDuration {
-            changeProgress(currentTime: currentTime, duration: duration)
-        }
+        let itemDuration = audioPlayHelper.currentItemDuration()
+        changeProgress(currentTime: currentTime, duration: itemDuration)
     }
     
-    func didPlaybackEnd(_ audioPlayer: AudioPlayer) {
+    func didPlaybackEnd(_ audioPlayHelper: AudioPlayHelper) {
         print("didPlaybackEnd")
         proceedToNextItem()
-    }
-    
-    func togglePlayButtonImage(_ audioPlayer: AudioPlayer, playButtonType: PlayButtonType) {
-        self.playButtonType.value = playButtonType
     }
     
     func proceedToNextItem() {
@@ -167,14 +168,14 @@ extension PlayerPageViewModel: AudioPlayerProtocol {
         guard let audioLink = playerDetails[ep].audioLinkUrl,
               let epTitle = playerDetails[ep].epTitle,
               let epImage = playerDetails[ep].epImage else { return }
-        audioPlayer.replaceCurrentItem(with: audioLink)
+        audioPlayHelper?.replaceCurrentItem(audioLink)
         self.epTitle.value = epTitle
         self.epImage.value = epImage
     }
     
     func keepCurrentEpisode(with audioLink: String) {
-        audioPlayer.replaceCurrentItem(with: audioLink)
-        audioPlayer.pausePlayer()
+        audioPlayHelper?.replaceCurrentItem(audioLink)
+        audioPlayHelper?.pausePlayer()
     }
     
 }

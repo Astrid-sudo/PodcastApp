@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TimeCalculator : NSObject
-+ (NSString*)floatToTimecodeString: (float*) seconds;
++ (NSString*)floatToTimecodeString: (float) seconds;
 
 @end
 
