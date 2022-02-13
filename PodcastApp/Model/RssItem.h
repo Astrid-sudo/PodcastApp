@@ -11,13 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RssItem : NSObject
 
-@property (nonatomic, strong) NSMutableString* rssTitle;
-@property (nonatomic, strong) NSMutableString* rssDescription;
-@property (nonatomic, strong) NSMutableString* rssPubDate;
+@property (nonatomic, strong) NSString* rssTitle;
+@property (nonatomic, strong) NSString* rssDescription;
+@property (nonatomic, strong) NSString* rssPubDate;
 @property (nonatomic, strong) NSString* rssAudioUrl;
 @property (nonatomic, strong) NSString* rssEpImageUrl;
 
-- (instancetype)initWithRssTitle:(NSMutableString*)rssTitle initWithRssDescription:(NSMutableString*)rssDescription initWithRssPubDate:(NSMutableString*)rssPubDate initWithAudioUrl:(NSString*)rssAudioUrl initWithEpImageUrl:(NSString*)rssEpImageUrl;
+- (instancetype)initWithRssTitle:(NSString*)rssTitle initWithRssDescription:(NSString*)rssDescription initWithRssPubDate:(NSString*)rssPubDate initWithAudioUrl:(NSString*)rssAudioUrl initWithEpImageUrl:(NSString*)rssEpImageUrl;
 
 - (NSString*) description;
 

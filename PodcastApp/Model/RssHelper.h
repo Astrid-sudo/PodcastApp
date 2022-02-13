@@ -13,7 +13,7 @@
 
 @protocol RssHelperDelegate <NSObject>
 @required
-- (void)suceededFetchRss:(NSArray*)rssItems infoTitle:(NSMutableString*)infoTitle infoImage:(NSString*)infoImage;
+- (void)suceededFetchRss:(NSArray*)rssItems infoTitle:(NSString*)infoTitle infoImage:(NSString*)infoImage;
 - (void)failedFetchRss;
 @end
 
@@ -25,7 +25,7 @@
 @property (nonatomic) bool infoImageFound;
 @property (nonatomic, strong) NSMutableArray *rssItems;
 @property (nonatomic, strong) NSString *rssInfoImage;
-@property (nonatomic, strong) NSMutableString *rssInfoTitle;
+@property (nonatomic, strong) NSString *rssInfoTitle;
 
 @property (nonatomic, strong) NSString *audioUrl;
 @property (nonatomic, strong) NSString *currentElement;

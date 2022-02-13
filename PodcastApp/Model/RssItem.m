@@ -9,7 +9,7 @@
 
 @implementation RssItem
 
-- (instancetype)initWithRssTitle:(NSMutableString*)rssTitle initWithRssDescription:(NSMutableString*)rssDescription initWithRssPubDate:(NSMutableString*)rssPubDate initWithAudioUrl:(NSString*)rssAudioUrl initWithEpImageUrl:(NSString*)rssEpImageUrl {
+- (instancetype)initWithRssTitle:(NSString*)rssTitle initWithRssDescription:(NSString*)rssDescription initWithRssPubDate:(NSString*)rssPubDate initWithAudioUrl:(NSString*)rssAudioUrl initWithEpImageUrl:(NSString*)rssEpImageUrl {
     self = [super init];
     if (self != nil) {
         self.rssTitle = rssTitle;

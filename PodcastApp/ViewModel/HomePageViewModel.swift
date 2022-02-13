@@ -41,9 +41,9 @@ class HomePageViewModel: NSObject {
         
         let episodeDetails = rssFeedItems.map {
             EpisodeDetail(podcastTitile: podcastTitle,
-                          epTitle: $0.rssTitle as String,
+                          epTitle: $0.rssTitle,
                           epImage: epImage,
-                          epDescription: $0.rssDescription as String,
+                          epDescription: $0.rssDescription,
                           audioLinkUrl: $0.rssAudioUrl)
         }
         return episodeDetails
@@ -70,8 +70,8 @@ extension HomePageViewModel: UITableViewDataSource {
             }
         
         cell.configCell(image: epImage,
-                        epTitle: rssFeedItems.value[row].rssTitle as String,
-                        updateDate: rssFeedItems.value[row].rssPubDate as String)
+                        epTitle: rssFeedItems.value[row].rssTitle,
+                        updateDate: rssFeedItems.value[row].rssPubDate)
         return cell
     }
     
@@ -123,7 +123,7 @@ extension HomePageViewModel: UITableViewDelegate {
 
 extension HomePageViewModel: RssHelperDelegate {
     
-    func suceededFetchRss(_ rssItems: [Any], infoTitle: NSMutableString, infoImage: String) {
+    func suceededFetchRss(_ rssItems: [Any], infoTitle: String, infoImage: String) {
         let rssItemArray = rssItems.compactMap({ $0 as? RssItem})
         self.rssFeedItems.value = rssItemArray
         self.rssFeedTitle = String(infoTitle)

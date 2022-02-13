@@ -92,11 +92,16 @@
     }
     
     if ([elementName  isEqualToString: @"item"]) {
-        RssItem *rssItem = [[RssItem alloc] initWithRssTitle: _currentTitle initWithRssDescription:_currentDescription initWithRssPubDate:_currentPubDate initWithAudioUrl:_currentAudioUrl initWithEpImageUrl:_currentInfoImageUrl];
+        
+        NSString *immutableTitle = [NSString stringWithString:_currentTitle];
+        NSString *immutableDescription = [NSString stringWithString:_currentDescription];
+        NSString *immutableCurrentPubDate = [NSString stringWithString:_currentPubDate];
+
+        RssItem *rssItem = [[RssItem alloc] initWithRssTitle: immutableTitle initWithRssDescription:immutableDescription initWithRssPubDate:immutableCurrentPubDate initWithAudioUrl:_currentAudioUrl initWithEpImageUrl:_currentInfoImageUrl];
         
             if (rssItem) [_rssItems addObject:rssItem];
     }
-
+    
     if ([elementName  isEqualToString: @"itunes:image"]) {
         if (!_infoImageFound) {
             _infoImageFound = true;
@@ -107,7 +112,8 @@
     if ([elementName  isEqualToString: @"title"]) {
         if (_infoTitleFound != true) {
             _infoTitleFound = true;
-            _rssInfoTitle = _currentTitle;
+            NSString *immutableRssInfoTitle = [NSString stringWithString:_currentTitle];
+            _rssInfoTitle = immutableRssInfoTitle;
         }
     }
 
