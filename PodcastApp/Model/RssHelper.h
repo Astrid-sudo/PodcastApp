@@ -35,8 +35,9 @@
 @property (nonatomic, strong) NSString *currentInfoImageUrl;
 @property (nonatomic, strong) NSString *currentAudioUrl;
 
+@property (nonatomic, weak) id<RssHelperDelegate> delegate;
+
 - (void)parsefeedWithUrlString:(NSString*) urlString ;
-@property (nonatomic, strong) id<RssHelperDelegate> delegate;
 - (instancetype)init;
 
 @end

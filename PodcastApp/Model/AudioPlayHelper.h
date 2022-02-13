@@ -45,11 +45,7 @@ typedef NS_ENUM(NSUInteger, PlayerState) {
 @property (nonatomic ,strong) id timeObserverToken;
 @property (nonatomic ,strong) GCDTimer* gcdTimer;
 @property (nonatomic ,strong) id statusObserve;
-@property (nonatomic, strong) id<AudioPlayHelperDelegate> delegate;
-
-// MARK: - init
-
-- (instancetype)init;
+@property (nonatomic, weak) id <AudioPlayHelperDelegate> delegate;
 
 // MARK: - method
 
@@ -75,7 +71,6 @@ typedef NS_ENUM(NSUInteger, PlayerState) {
 - (void)playPlayer;
 - (void)pausePlayer;
 - (void)togglePlay;
-- (void)releasePlayer;
 
 @end
 

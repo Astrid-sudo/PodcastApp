@@ -26,9 +26,9 @@ class PlayerPageViewModel: NSObject {
     var audioLink = ""
     
     
-    private lazy var audioPlayHelper: AudioPlayHelper? = {
+    private lazy var audioPlayHelper: AudioPlayHelper = {
         let audioPlayHelper = AudioPlayHelper()
-        audioPlayHelper?.delegate = self
+        audioPlayHelper.delegate = self
         return audioPlayHelper
     }()
     
@@ -42,10 +42,8 @@ class PlayerPageViewModel: NSObject {
         configPlayer()
     }
     
-    
     deinit {
-        audioPlayHelper?.releasePlayer()
-        print("PlayerPageModel Deinit")
+        print("PlayerPageViewModel Deinit")
     }
     
     // MARK: - method
@@ -64,7 +62,7 @@ class PlayerPageViewModel: NSObject {
     
     private func configPlayer() {
         guard let audioLinkUrl = playerDetails[currentEpisodeIndex].audioLinkUrl else { return }
-        audioPlayHelper?.configPlayer(audioLinkUrl)
+        audioPlayHelper.configPlayer(audioLinkUrl)
     }
     
     func changeCurrentTime(currentTime: CMTime) {
@@ -87,7 +85,7 @@ class PlayerPageViewModel: NSObject {
     // MARK: - player method
     
     func togglePlay() {
-        audioPlayHelper?.togglePlay()
+        audioPlayHelper.togglePlay()
     }
     
     func switchToItem(_ switchType: SwitchItemType) {
@@ -100,15 +98,15 @@ class PlayerPageViewModel: NSObject {
     }
     
     func slideToTime(_ sliderValue: Double) {
-        audioPlayHelper?.slide(toTime: sliderValue)
+        audioPlayHelper.slide(toTime: sliderValue)
     }
     
     func sliderTouchEnded(_ sliderValue: Double) {
-        audioPlayHelper?.sliderTouchEnded(sliderValue)
+        audioPlayHelper.sliderTouchEnded(sliderValue)
     }
     
     func pausePlayer() {
-        audioPlayHelper?.pausePlayer()
+        audioPlayHelper.pausePlayer()
     }
     
 }
@@ -168,14 +166,14 @@ extension PlayerPageViewModel: AudioPlayHelperDelegate {
         guard let audioLink = playerDetails[ep].audioLinkUrl,
               let epTitle = playerDetails[ep].epTitle,
               let epImage = playerDetails[ep].epImage else { return }
-        audioPlayHelper?.replaceCurrentItem(audioLink)
+        audioPlayHelper.replaceCurrentItem(audioLink)
         self.epTitle.value = epTitle
         self.epImage.value = epImage
     }
     
     func keepCurrentEpisode(with audioLink: String) {
-        audioPlayHelper?.replaceCurrentItem(audioLink)
-        audioPlayHelper?.pausePlayer()
+        audioPlayHelper.replaceCurrentItem(audioLink)
+        audioPlayHelper.pausePlayer()
     }
     
 }

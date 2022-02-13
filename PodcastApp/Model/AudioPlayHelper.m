@@ -11,18 +11,16 @@
 
 @implementation AudioPlayHelper
 
-// MARK: - init
-
-- (instancetype)init {
-    if ((self = [super init])) {
-        
-    }
-    return self;
-}
 
 - (void)dealloc {
+    if (_gcdTimer != nil) {
+        [_gcdTimer invalidate];
+        _gcdTimer = nil;
+    }
     [_avPlayer.currentItem removeObserver:self forKeyPath:@"status"];
     [_avPlayer removeTimeObserver:_timeObserverToken];
+    _timeObserverToken = nil;
+    _avPlayer = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -83,14 +81,14 @@ change:(NSDictionary *)change context:(void *)context {
 // MARK: - player method
 
 - (void)addPeriodicTimeObserver {
+    __weak AudioPlayHelper *weakSelf = self;
     CMTime interval = CMTimeMakeWithSeconds(0.5, NSEC_PER_SEC);
     dispatch_queue_t mainQueue = dispatch_get_main_queue();
     self.timeObserverToken =
     [_avPlayer addPeriodicTimeObserverForInterval:interval
                                                   queue:mainQueue
                                              usingBlock:^(CMTime time) {
-        __weak typeof(self) weakSelf = self;
-        [_delegate updateCurrentTime:weakSelf currentTime:time];
+        [weakSelf.delegate updateCurrentTime:weakSelf currentTime:time];
         }];
 }
 
@@ -128,15 +126,15 @@ change:(NSDictionary *)change context:(void *)context {
 }
 
 - (void)bufferingForSeconds: (AVPlayerItem*) playerItem player: (AVPlayer*) player {
+    __weak AudioPlayHelper *weakSelf = self;
     if (playerState != PlayerStateFailed && playerItem.status == PlayerStateReadyToPlay) {
         [self cancelPlay:_avPlayer];
         playerState = PlayerStateBuffering;
         _gcdTimer = [[GCDTimer alloc] initWithTimeout:3.0 repeat:false completion:^{
-            __weak typeof(self) weakSelf = self;
-            if (_avPlayer.currentItem.isPlaybackLikelyToKeepUp) {
+            if (weakSelf.avPlayer.currentItem.isPlaybackLikelyToKeepUp) {
                 [weakSelf playPlayer];
             } else {
-                [weakSelf bufferingForSeconds:weakSelf.avPlayer.currentItem player:_avPlayer];
+                [weakSelf bufferingForSeconds: weakSelf.avPlayer.currentItem player: weakSelf.avPlayer];
             }
         } queue:dispatch_get_main_queue()];
     }
@@ -194,13 +192,6 @@ change:(NSDictionary *)change context:(void *)context {
             [self playPlayer];
             break;
     }
-}
-
-- (void)releasePlayer {
-    _avPlayer = nil;
-    _gcdTimer = nil;
-    _timeObserverToken = nil;
-    _statusObserve = nil;
 }
 
 
