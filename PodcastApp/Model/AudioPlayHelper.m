@@ -42,12 +42,14 @@
 }
 
 - (void)replaceCurrentItem: (NSString*) urlString {
+    [self pausePlayer];
     NSURL *url = [NSURL URLWithString:urlString];
     AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:url];
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         [_avPlayer.currentItem removeObserver:self forKeyPath:@"status"];
         [_avPlayer replaceCurrentItemWithPlayerItem:playerItem];
         [self observePlayerItem:_avPlayer.currentItem];
+        [self playPlayer];
     });
 }
 
@@ -74,6 +76,7 @@ change:(NSDictionary *)change context:(void *)context {
 - (void)didPlaybackEnd:(NSNotification *)notification {
     __weak typeof(self) weakSelf = self;
     playerState = PlayerStateEnded;
+    [_delegate toggleButtonImage:self playerState:playerState];
     [_delegate didPlaybackEnd:weakSelf];
 }
 
