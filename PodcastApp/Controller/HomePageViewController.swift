@@ -28,22 +28,13 @@ class HomePageViewController: UIViewController {
         return table
     }()
     
-    private lazy var indicatorView: UIActivityIndicatorView = {
-        let view = UIActivityIndicatorView(style: .large)
-        view.color = .darkGray
-        view.hidesWhenStopped = true
-        return view
-    }()
-    
     // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setTableView()
-        setIndicatorView()
         binding()
-        indicatorView.startAnimating()
     }
     
     // MARK: - config UI method
@@ -59,22 +50,12 @@ class HomePageViewController: UIViewController {
         ])
     }
     
-    private func setIndicatorView() {
-        tableView.addSubview(indicatorView)
-        indicatorView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            indicatorView.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
-            indicatorView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor),
-        ])
-    }
-    
     // MARK: - method
     
     func binding() {
         homePageViewModel.rssFeedItems.bind { [weak self] _ in
             guard let self = self else { return }
             self.tableView.reloadData()
-            self.indicatorView.stopAnimating()
         }
         
         homePageViewModel.episodePageViewModel.bind { [weak self] episodePageViewModel in
@@ -141,9 +122,10 @@ extension HomePageViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let row = indexPath.row
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomePageTableViewCell.reuseIdentifier) as? HomePageTableViewCell else { return UITableViewCell()}
+        let pubDate = homePageViewModel.rssFeedItems.value[row].rssPubDate
         cell.configCell(image: nil,
                         epTitle: homePageViewModel.rssFeedItems.value[row].rssTitle,
-                        updateDate: homePageViewModel.rssFeedItems.value[row].rssPubDate)
+                        updateDate: pubDate)
         cellDownloadWithUrlSession(at: indexPath)
         return cell
     }

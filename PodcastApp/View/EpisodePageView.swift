@@ -68,10 +68,10 @@ class EpisodePageView: UIView {
     
     private lazy var presentPlayerButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 100)
+        let config = UIImage.SymbolConfiguration(pointSize: 70)
         let bigImage = UIImage(systemName: "play.circle", withConfiguration: config)
         button.setImage(bigImage, for: .normal)
-        button.tintColor = .blue
+        button.tintColor = .systemBlue
         button.addTarget(self, action: #selector(tapPlayerButton), for: .touchUpInside)
         return button
     }()
@@ -113,7 +113,7 @@ class EpisodePageView: UIView {
         NSLayoutConstraint.activate([
             epTitleLabel.leadingAnchor.constraint(equalTo: podcastTitleLabel.leadingAnchor),
             epTitleLabel.trailingAnchor.constraint(equalTo: epImageView.trailingAnchor, constant: -padding),
-            epTitleLabel.topAnchor.constraint(equalTo: podcastTitleLabel.bottomAnchor, constant: 2 * padding)
+            epTitleLabel.topAnchor.constraint(equalTo: podcastTitleLabel.bottomAnchor, constant: padding / 2)
         ])
     }
     
@@ -132,9 +132,9 @@ class EpisodePageView: UIView {
         self.addSubview(presentPlayerButton)
         presentPlayerButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            presentPlayerButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: padding),
+//            presentPlayerButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: padding),
             presentPlayerButton.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            presentPlayerButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -padding)
+            presentPlayerButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -padding / 2)
         ])
     }
 

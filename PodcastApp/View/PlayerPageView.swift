@@ -70,7 +70,7 @@ class PlayerPageView: UIView {
     lazy var progressSlider: UISlider = {
         let slider = UISlider()
         slider.maximumTrackTintColor = .gray
-        slider.minimumTrackTintColor = .blue
+        slider.minimumTrackTintColor = .systemBlue
         slider.minimumValue = 0
         slider.maximumValue = 1
         slider.value = 0
@@ -84,30 +84,27 @@ class PlayerPageView: UIView {
     
     lazy var playeButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 100)
+        let config = UIImage.SymbolConfiguration(pointSize: 65)
         let bigImage = UIImage(systemName: "play.circle", withConfiguration: config)
         button.setImage(bigImage, for: .normal)
-        button.tintColor = .blue
         button.addTarget(self, action: #selector(togglePlay), for: .touchUpInside)
         return button
     }()
     
     private lazy var forwardButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 80)
+        let config = UIImage.SymbolConfiguration(pointSize: 65)
         let bigImage = UIImage(systemName: "forward", withConfiguration: config)
         button.setImage(bigImage, for: .normal)
-        button.tintColor = .blue
         button.addTarget(self, action: #selector(switchToNextItem), for: .touchUpInside)
         return button
     }()
     
     private lazy var backwardButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 80)
+        let config = UIImage.SymbolConfiguration(pointSize: 65)
         let bigImage = UIImage(systemName: "backward", withConfiguration: config)
         button.setImage(bigImage, for: .normal)
-        button.tintColor = .blue
         button.addTarget(self, action: #selector(switchToPreviousItem), for: .touchUpInside)
         return button
     }()
@@ -115,7 +112,7 @@ class PlayerPageView: UIView {
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.spacing = 8
+        stackView.spacing = padding / 4
         stackView.alignment = .center
         stackView.distribution = .fillProportionally
         return stackView
@@ -179,8 +176,7 @@ class PlayerPageView: UIView {
         NSLayoutConstraint.activate([
             progressSlider.leadingAnchor.constraint(equalTo: epImageView.leadingAnchor),
             progressSlider.trailingAnchor.constraint(equalTo: epImageView.trailingAnchor),
-            progressSlider.bottomAnchor.constraint(equalTo: stackView.topAnchor, constant: -padding),
-            progressSlider.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: 0.25)
+            progressSlider.bottomAnchor.constraint(equalTo: stackView.topAnchor, constant: -padding / 2)
         ])
     }
     
