@@ -152,6 +152,7 @@ extension PlayerPageViewModel: AudioPlayHelperDelegate {
         if currentEpisodeIndex > 0 {
             currentEpisodeIndex -= 1
             proceedToEpisode(ep: currentEpisodeIndex)
+            audioPlayHelper.playPlayer()
         } else {
             if let audioLink = playerDetails[0].audioLinkUrl {
                 keepCurrentEpisode(with: audioLink)
@@ -163,6 +164,7 @@ extension PlayerPageViewModel: AudioPlayHelperDelegate {
         if playerDetails.count - 1 > currentEpisodeIndex {
             currentEpisodeIndex += 1
             proceedToEpisode(ep: currentEpisodeIndex)
+            audioPlayHelper.playPlayer()
         } else {
             if let audioLink = playerDetails[playerDetails.count - 1].audioLinkUrl {
                 keepCurrentEpisode(with: audioLink)

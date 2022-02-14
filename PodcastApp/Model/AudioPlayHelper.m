@@ -49,7 +49,6 @@
         [_avPlayer.currentItem removeObserver:self forKeyPath:@"status"];
         [_avPlayer replaceCurrentItemWithPlayerItem:playerItem];
         [self observePlayerItem:_avPlayer.currentItem];
-        [self playPlayer];
     });
 }
 
