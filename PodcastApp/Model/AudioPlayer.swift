@@ -32,29 +32,9 @@ class AudioPlayer {
     
     var playerState: PlayerState = .unknow
     
-    var currentItem: AVPlayerItem? {
-        return avPlayer?.currentItem
-    }
-    
-    var currentItemDuration: CMTime? {
-        guard let currentItem = currentItem else { return nil }
-        return currentItem.duration
-    }
-    
-    var currentItemCurrentTime: CMTime? {
-        guard let currentItem = currentItem else { return nil }
-        return currentItem.currentTime()
-    }
-    
-    var bufferTimer: BufferTimer?
+    var gcdTimer: GCDTimer?
     
     var timeObserverToken: Any?
-    
-    var isPlaybackBufferEmptyObserver: NSKeyValueObservation?
-    
-    var isPlaybackBufferFullObserver: NSKeyValueObservation?
-    
-    var isPlaybackLikelyToKeepUpObserver: NSKeyValueObservation?
     
     var statusObserve: NSKeyValueObservation?
     
@@ -64,6 +44,18 @@ class AudioPlayer {
         print("AudioPlayer Deinit")
     }
     
+    // MARK: - method
+    
+    func currentItemCurrentTime() -> CMTime? {
+        guard let currentItem = avPlayer?.currentItem else { return nil }
+        return currentItem.currentTime()
+    }
+    
+    func currentItemDuration() -> CMTime? {
+        guard let currentItem = avPlayer?.currentItem else { return nil }
+        return currentItem.duration
+    }
+    
     // MARK: - player item method
     
     /// Create player in AudioPlayer with url string. This method also observe player item's status, didPlayEnd.
@@ -71,7 +63,7 @@ class AudioPlayer {
     func configQueuePlayer(_ urlString: String) {
         guard let url = URL(string: urlString) else { return }
         avPlayer = AVPlayer(url: url)
-        observePlayerItem(currentPlayerItem: currentItem)
+        observePlayerItem(currentPlayerItem: avPlayer?.currentItem)
     }
     
     func replaceCurrentItem(with urlString: String) {
@@ -79,7 +71,7 @@ class AudioPlayer {
         let playerItem = AVPlayerItem(url: url)
         DispatchQueue.main.async {
             self.avPlayer?.replaceCurrentItem(with: playerItem)
-            self.observePlayerItem(currentPlayerItem: self.currentItem)
+            self.observePlayerItem(currentPlayerItem: self.avPlayer?.currentItem)
         }
     }
     
@@ -139,8 +131,9 @@ class AudioPlayer {
     /// Call this method when user is in the process of dragging progress bar slider.
     func slideToTime(_ sliderValue: Double) {
         guard let avPlayer = avPlayer,
-              let duration = self.currentItemDuration else { return }
-        let seekCMTime = TimeManager.getCMTime(from: sliderValue, duration: duration)
+              let currentItem = avPlayer.currentItem else { return }
+        let duration = currentItem.duration
+        let seekCMTime = CMTimeMultiplyByFloat64(duration, multiplier: sliderValue)
         avPlayer.seek(to: seekCMTime)
         delegate?.updateCurrentTime(self, currentTime: seekCMTime)
     }
@@ -148,9 +141,9 @@ class AudioPlayer {
     /// Call this method when user end dragging progress bar slider.
     func sliderTouchEnded(_ sliderValue: Double) {
         guard let avPlayer = avPlayer,
-              let currentItem = currentItem,
-              let currentItemDuration = currentItemDuration else { return }
-
+              let currentItem = avPlayer.currentItem else { return }
+        let currentItemDuration = currentItem.duration
+        
         // Drag to the end of the progress bar.
         if sliderValue == 1 {
             delegate?.updateCurrentTime(self, currentTime: currentItemDuration)
@@ -176,23 +169,24 @@ class AudioPlayer {
               playerState != .failed else { return }
         self.cancelPlay(player: player)
         playerState = .buffering
-        bufferTimer = BufferTimer(interval: 0, delaySecs: 3.0, repeats: false, action: { [weak self] _ in
+        gcdTimer = GCDTimer(timeout: 3.0, repeat: false, completion: { [weak self] in
             guard let self = self else { return }
             if playerItem.isPlaybackLikelyToKeepUp {
                 self.playPlayer()
             } else {
                 self.bufferingForSeconds(playerItem: playerItem, player: player)
             }
-        })
-        bufferTimer?.start()
+        }, queue: .main)
+        gcdTimer?.start()
     }
+
     
     /// Pause player, let player control keep existing on screen.(Call this method when buffering.)
     func cancelPlay(player: AVPlayer) {
         guard let avPlayer = avPlayer else { return }
         avPlayer.pause()
         playerState = .pause
-        bufferTimer?.cancel()
+        gcdTimer?.invalidate()
     }
     
     /// Play player, update player UI.
@@ -230,11 +224,8 @@ class AudioPlayer {
     
     func releasePlayer() {
         avPlayer = nil
-        bufferTimer = nil
+        gcdTimer = nil
         timeObserverToken = nil
-        isPlaybackBufferEmptyObserver = nil
-        isPlaybackBufferFullObserver = nil
-        isPlaybackLikelyToKeepUpObserver = nil
         statusObserve = nil
     }
     

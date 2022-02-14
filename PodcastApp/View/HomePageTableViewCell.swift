@@ -93,5 +93,9 @@ class HomePageTableViewCell: UITableViewCell {
         updateDateLabel.text = updateDate
     }
     
+    func displayImage(image: UIImage) {
+        theImageView.image = image
+    }
+
 }
 
