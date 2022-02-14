@@ -21,7 +21,10 @@ class HomePageViewModel: NSObject {
     let rssHelper = RssHelper()
     let rssFeedItems: Box<[RssItem]> = Box([RssItem]())
     var rssFeedTitle: String?
-    var homeImageURL: URL?
+    var homeImageUrlString: String?
+    
+    var homeImage: UIImage?
+    var epImage: UIImage?
     
     var episodePageViewModel: Box<EpisodePageViewModel> = Box(EpisodePageViewModel())
     
@@ -37,7 +40,7 @@ class HomePageViewModel: NSObject {
     
     func transformToEpisodeDetails(rssFeedItems:[RssItem],
                                    podcastTitle: String,
-                                   epImage: UIImage) -> [EpisodeDetail] {
+                                   epImage: UIImage?) -> [EpisodeDetail] {
         
         let episodeDetails = rssFeedItems.map {
             EpisodeDetail(podcastTitile: podcastTitle,
@@ -49,74 +52,18 @@ class HomePageViewModel: NSObject {
         return episodeDetails
     }
     
-}
-
-// MARK: - UITableViewDataSource
-
-extension HomePageViewModel: UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        rssFeedItems.value.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let row = indexPath.row
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomePageTableViewCell.reuseIdentifier) as? HomePageTableViewCell else { return UITableViewCell()}
-        var epImage: UIImage?
-            if let url = URL(string: rssFeedItems.value[row].rssEpImageUrl) {
-                if let data = try? Data(contentsOf: url) {
-                    epImage = UIImage(data: data)
+    func fetchImage(urlString: String?) -> UIImage? {
+        var myImage: UIImage?
+        if let string = urlString {
+            if let homeImageURL = URL(string: string) {
+                if let data = try? Data(contentsOf: homeImageURL) {
+                    myImage = UIImage(data: data)
                 }
             }
-        
-        cell.configCell(image: epImage,
-                        epTitle: rssFeedItems.value[row].rssTitle,
-                        updateDate: rssFeedItems.value[row].rssPubDate)
-        return cell
-    }
-    
-}
-
-// MARK: - UITableViewDelegate
-
-extension HomePageViewModel: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        var myImage: UIImage?
-        if let homeImageURL = homeImageURL {
-            if let data = try? Data(contentsOf: homeImageURL) {
-                myImage = UIImage(data: data)
-            }
         }
-        
-        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomePageTableViewHeader.reuseIdentifier) as? HomePageTableViewHeader else { return UIView()}
-        headerView.configImage(image: myImage)
-        return headerView
+        return myImage
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 250
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        let row = indexPath.row
-        
-        var myImage: UIImage?
-        if let homeImageURL = URL(string: rssFeedItems.value[row].rssEpImageUrl) {
-            if let data = try? Data(contentsOf: homeImageURL) {
-                myImage = UIImage(data: data)
-            }
-        }
-        
-        guard let myImage = myImage,
-        let rssFeedTitle = rssFeedTitle else { return }
-        let episodeDetails = transformToEpisodeDetails(rssFeedItems: rssFeedItems.value, podcastTitle: rssFeedTitle, epImage: myImage)
-        
-        let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: row)
-        self.episodePageViewModel.value = episodeViewModel
-    }
-
 }
 
 // MARK: - RssHelperDelegate
@@ -127,7 +74,9 @@ extension HomePageViewModel: RssHelperDelegate {
         let rssItemArray = rssItems.compactMap({ $0 as? RssItem})
         self.rssFeedItems.value = rssItemArray
         self.rssFeedTitle = String(infoTitle)
-        self.homeImageURL = URL(string: infoImage)
+        homeImageUrlString = infoImage
+        homeImage = fetchImage(urlString: self.homeImageUrlString)
+        epImage = fetchImage(urlString: rssFeedItems.value[0].rssEpImageUrl)
     }
     
     func failedFetchRss() {

@@ -18,8 +18,8 @@ class HomePageViewController: UIViewController {
     private lazy var tableView: UITableView = {
         let table = UITableView(frame: CGRect(), style: .grouped)
         table.backgroundColor = .clear
-        table.dataSource = homePageViewModel
-        table.delegate = homePageViewModel
+        table.dataSource = self
+        table.delegate = self
         table.allowsSelection = true
         table.separatorStyle = .none
         table.showsVerticalScrollIndicator = false
@@ -92,5 +92,94 @@ class HomePageViewController: UIViewController {
         navigationController?.pushViewController(episodePageViewController, animated: true)
     }
     
+    private func cellDownloadWithUrlSession(at indexPath: IndexPath) {
+        guard let url = URL(string: homePageViewModel.rssFeedItems.value[indexPath.row].rssEpImageUrl) else { return }
+        URLSession.shared.dataTask(with: url) {
+        [weak self] data, response, error in
+        guard let self = self,
+          let data = data,
+          let image = UIImage(data: data) else {
+            return
+        }
+
+        DispatchQueue.main.async {
+            if let cell = self.tableView.cellForRow(at: indexPath) as? HomePageTableViewCell {
+            cell.displayImage(image: image)
+          }
+        }
+      }.resume()
+    }
+    
+    private func nextDownloadWithUrlSession(at indexPath: IndexPath, nextViewModel: EpisodePageViewModel) {
+        guard let url = URL(string: homePageViewModel.rssFeedItems.value[indexPath.row].rssEpImageUrl),
+              let rssFeedTitle = homePageViewModel.rssFeedTitle else { return }
+        URLSession.shared.dataTask(with: url) {
+        [weak self] data, response, error in
+        guard let self = self,
+          let data = data,
+          let image = UIImage(data: data) else {
+            return
+        }
+        DispatchQueue.main.async {
+            let episodeDetails = self.homePageViewModel.transformToEpisodeDetails(rssFeedItems: self.homePageViewModel.rssFeedItems.value, podcastTitle: rssFeedTitle, epImage: image)
+            let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: indexPath.row)
+            self.homePageViewModel.episodePageViewModel.value = episodeViewModel
+        }
+      }.resume()
+    }
+
+}
+
+// MARK: - UITableViewDataSource
+
+extension HomePageViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        homePageViewModel.rssFeedItems.value.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let row = indexPath.row
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomePageTableViewCell.reuseIdentifier) as? HomePageTableViewCell else { return UITableViewCell()}
+        cell.configCell(image: nil,
+                        epTitle: homePageViewModel.rssFeedItems.value[row].rssTitle,
+                        updateDate: homePageViewModel.rssFeedItems.value[row].rssPubDate)
+        cellDownloadWithUrlSession(at: indexPath)
+        return cell
+    }
+    
+}
+
+// MARK: - UITableViewDelegate
+
+extension HomePageViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        var myImage: UIImage?
+        if let string = homePageViewModel.homeImageUrlString {
+            if let homeImageURL = URL(string: string) {
+                if let data = try? Data(contentsOf: homeImageURL) {
+                    myImage = UIImage(data: data)
+                }
+            }
+        }
+        
+        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomePageTableViewHeader.reuseIdentifier) as? HomePageTableViewHeader else { return UIView()}
+        headerView.configImage(image: myImage)
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 250
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let row = indexPath.row
+        guard let rssFeedTitle = homePageViewModel.rssFeedTitle else { return }
+        let episodeDetails = homePageViewModel.transformToEpisodeDetails(rssFeedItems: homePageViewModel.rssFeedItems.value, podcastTitle: rssFeedTitle, epImage: nil)
+        let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: row)
+        nextDownloadWithUrlSession(at: indexPath, nextViewModel: episodeViewModel)
+    }
+
 }
 
