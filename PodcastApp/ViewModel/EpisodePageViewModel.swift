@@ -44,6 +44,7 @@ class EpisodePageViewModel {
     
     // MARK: - method
     
+    /// Parse feed item and store in local properties.
     func parseFeedItem() {
         guard episodeDetails.count > currentEpisodeIndex else { return }
         let currentEpisodeDetail = episodeDetails[currentEpisodeIndex]
@@ -58,12 +59,17 @@ class EpisodePageViewModel {
         self.epDescription.value = epDescription
     }
     
+    /// Create PlayerPageViewModel.
+    /// - Returns: The view model prepare for next page.
     func createPlayerPageViewModel() -> PlayerPageViewModel {
         let playerDetails = transformToPlayerDetails(episodeDetails: episodeDetails)
         let playerPageViewModel = PlayerPageViewModel(playerDetails: playerDetails, currentEpisodeIndex: currentEpisodeIndex)
         return playerPageViewModel
     }
     
+    /// Transform EpisodeDetail array to PlayerDetails array.
+    /// - Parameter episodeDetails: EpisodeDetail array.
+    /// - Returns: PlayerDetail array.
     func transformToPlayerDetails(episodeDetails:[EpisodeDetail]) -> [PlayerDetail] {
         let playerDetails = episodeDetails.map {
             PlayerDetail(epTitle: $0.epTitle,

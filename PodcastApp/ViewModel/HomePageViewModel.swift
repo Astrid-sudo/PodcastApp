@@ -39,6 +39,12 @@ class HomePageViewModel: NSObject {
     
     // MARK: - method
     
+    /// Gathering data to create an EpisodeDetail array.
+    /// - Parameters:
+    ///   - rssFeedItems: Rss item array fetched from RSS Feed url.
+    ///   - podcastTitle: Podcast title fetched from RSS Feed url.
+    ///   - epImage: EpImage fetched from RSS Feed url.
+    /// - Returns: EpisodeDetail array
     func transformToEpisodeDetails(rssFeedItems:[RssItem],
                                    podcastTitle: String,
                                    epImage: UIImage?) -> [EpisodeDetail] {
@@ -52,6 +58,9 @@ class HomePageViewModel: NSObject {
         return episodeDetails
     }
     
+    /// Make pubDate from "EEE, d MMM yyyy" to "yyyy/MM/d" in RssItem array.
+    /// - Parameter items: An RssItem array.
+    /// - Returns: An RssItem array with "yyyy/MM/d" format pubDate.
     func transformItemsDate(items:[RssItem]) -> [RssItem] {
         let newItems = items.map{
             RssItem(rssTitle: $0.rssTitle,
@@ -62,6 +71,9 @@ class HomePageViewModel: NSObject {
         return newItems
     }
     
+    /// Convert date string from "EEE, d MMM yyyy HH:mm:ss +0000" to "yyyy/MM/d"
+    /// - Parameter dateString: Date string in "EEE, d MMM yyyy HH:mm:ss +0000".
+    /// - Returns: Date string in "yyyy/MM/d".
     func convertDate(dateString: String) -> String {
         let string = String(dateString.dropLast(21))
         let dateFormatter = DateFormatter()
@@ -75,6 +87,10 @@ class HomePageViewModel: NSObject {
         return ""
     }
     
+    /// Download image with url string and pass the image out by closure.
+    /// - Parameters:
+    ///   - urlString: Image url string.
+    ///   - completion: The closure will be execute after finishing download image.
     func downloadImage(urlString: String, completion: @escaping(UIImage) -> Void) {
         guard let url = URL(string: urlString) else { return }
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -86,6 +102,10 @@ class HomePageViewModel: NSObject {
         }.resume()
     }
     
+    /// Download image with url string and pass the image out by closure and store in cache dictionary.
+    /// - Parameters:
+    ///   - indexPath: The index of the image in rss feed data.
+    ///   - completion: The closure will be execute after finishing download image.
     func downloadToCache(indexPath: IndexPath, completion: @escaping(UIImage) -> Void) {
         let urlString = rssFeedItems.value[indexPath.row].rssEpImageUrl
         downloadImage(urlString: urlString) { [weak self] image in
@@ -95,6 +115,10 @@ class HomePageViewModel: NSObject {
         }
     }
     
+    /// Check whether an image is already in cache dictionary.
+    /// - Parameters:
+    /// - indexPath: The index of the image in rss feed data.
+    /// - Returns: True if the image in already in the cache dictionary, vice versa.
     func imageInCache(indexPath: IndexPath) -> Bool {
         return cacheEpImages[indexPath.row] != nil
     }
