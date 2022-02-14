@@ -24,9 +24,9 @@ class HomePageViewModel: NSObject {
     var rssFeedTitle: String?
     var homeImageUrlString: String?
     
-    var homeImage: UIImage?
-    var epImage: UIImage?
-    
+    var cacheEpImages: [Int: UIImage] = [:]
+    var homeImage: Box<UIImage> = Box(UIImage())
+
     var episodePageViewModel: Box<EpisodePageViewModel> = Box(EpisodePageViewModel())
     
     // MARK: - init
@@ -75,16 +75,28 @@ class HomePageViewModel: NSObject {
         return ""
     }
     
-    func fetchImage(urlString: String?) -> UIImage? {
-        var myImage: UIImage?
-        if let string = urlString {
-            if let homeImageURL = URL(string: string) {
-                if let data = try? Data(contentsOf: homeImageURL) {
-                    myImage = UIImage(data: data)
-                }
+    func downloadImage(urlString: String, completion: @escaping(UIImage) -> Void) {
+        guard let url = URL(string: urlString) else { return }
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data,
+                  let image = UIImage(data: data) else { return }
+            DispatchQueue.main.async {
+                completion(image)
             }
+        }.resume()
+    }
+    
+    func downloadToCache(indexPath: IndexPath, completion: @escaping(UIImage) -> Void) {
+        let urlString = rssFeedItems.value[indexPath.row].rssEpImageUrl
+        downloadImage(urlString: urlString) { [weak self] image in
+            guard let self = self else { return }
+            self.cacheEpImages[indexPath.row] = image
+            completion(image)
         }
-        return myImage
+    }
+    
+    func imageInCache(indexPath: IndexPath) -> Bool {
+        return cacheEpImages[indexPath.row] != nil
     }
     
 }
@@ -99,8 +111,12 @@ extension HomePageViewModel: RssHelperDelegate {
         self.rssFeedItems.value = transformItemsDate(items: originRssFeedItems)
         self.rssFeedTitle = String(infoTitle)
         homeImageUrlString = infoImage
-        homeImage = fetchImage(urlString: self.homeImageUrlString)
-        epImage = fetchImage(urlString: rssFeedItems.value[0].rssEpImageUrl)
+        if let imageUrl = homeImageUrlString {
+            downloadImage(urlString: imageUrl) { [weak self] image in
+                guard let self = self else { return }
+                self.homeImage.value = image
+            }
+        }
     }
     
     func failedFetchRss() {
