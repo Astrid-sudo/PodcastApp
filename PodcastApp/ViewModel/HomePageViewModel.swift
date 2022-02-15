@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import FeedKit
 
 struct EpisodeDetail {
     let podcastTitile: String?

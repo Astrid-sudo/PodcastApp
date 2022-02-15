@@ -108,7 +108,7 @@ class PlayerPageViewModel: NSObject {
         }
     }
     
-    /// Ask audioPlayHelper slide to time according to progress bar value during value changed.
+    /// Ask audioPlayHelper slide to time according to progress bar value during value change.
     /// - Parameter sliderValue: Progress bar value.
     func slideToTime(_ sliderValue: Double) {
         audioPlayHelper.slide(toTime: sliderValue)

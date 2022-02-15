@@ -132,9 +132,8 @@ class EpisodePageView: UIView {
         self.addSubview(presentPlayerButton)
         presentPlayerButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-//            presentPlayerButton.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: padding),
             presentPlayerButton.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            presentPlayerButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -padding / 2)
+            presentPlayerButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -padding)
         ])
     }
 

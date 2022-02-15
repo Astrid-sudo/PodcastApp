@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import FeedKit
 
 struct PlayerDetail {
     let epTitle: String?
