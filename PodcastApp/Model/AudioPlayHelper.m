@@ -94,9 +94,11 @@ change:(NSDictionary *)change context:(void *)context {
 
 - (void)slideToTime: (double) sliderValue {
     CMTime duration = _avPlayer.currentItem.duration;
-    CMTime seekCMTime = CMTimeMultiplyByFloat64(duration, sliderValue);
-    [_avPlayer seekToTime:seekCMTime];
-    [_delegate updateCurrentTime:self currentTime:seekCMTime];
+    if (!CMTIME_IS_INDEFINITE(duration)) {
+        CMTime seekCMTime = CMTimeMultiplyByFloat64(duration, sliderValue);
+        [_avPlayer seekToTime:seekCMTime];
+        [_delegate updateCurrentTime:self currentTime:seekCMTime];
+    };
 }
 
 - (void)sliderTouchEnded: (double) sliderValue {
