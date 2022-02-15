@@ -9,15 +9,12 @@ import UIKit
 
 class HomePageTableViewCell: UITableViewCell {
     
-    // MARK: - properties
-    
-    static let reuseIdentifier = String(describing: HomePageTableViewCell.self)
-    
     // MARK: - UI properties
     
     private lazy var theImageView: UIImageView = {
         let image = UIImageView()
         image.layer.masksToBounds = true
+        image.addIndicator()
         return image
     }()
     
@@ -45,6 +42,7 @@ class HomePageTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .clear
+        self.selectionStyle = .none
         setImageView()
         setEpTitleLabel()
         setUpdateDateLabel()
@@ -87,15 +85,16 @@ class HomePageTableViewCell: UITableViewCell {
         ])
     }
     
-    func configCell(image: UIImage?, epTitle: String?, updateDate: String?) {
-        theImageView.image = image
+    func configCell(imageURLString: String, epTitle: String?, updateDate: String?) {
+        theImageView.addIndicator()
+        theImageView.loadImage(imageURLString, placeHolder: nil)
         epTitleLabel.text = epTitle
         updateDateLabel.text = updateDate
     }
     
-    func displayImage(image: UIImage) {
-        theImageView.image = image
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        theImageView.cancelDownload()
     }
 
 }
-

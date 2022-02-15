@@ -11,8 +11,6 @@ class EpisodePageViewController: UIViewController {
     
     // MARK: - properties
     
-    static var reuseIdentifier = String(describing: EpisodePageViewController.self)
-    
     var episodePageViewModel: EpisodePageViewModel?
     
     // MARK: - UI properties
@@ -74,9 +72,9 @@ class EpisodePageViewController: UIViewController {
             self.episodePageView.descriptionTextView.text = epDescription
         }
         
-        episodePageViewModel.epImage.bind { [weak self] epImage in
+        episodePageViewModel.epImageUrl.bind { [weak self] epImageString in
             guard let self = self else { return }
-            self.episodePageView.epImageView.image = epImage
+            self.episodePageView.epImageView.loadImage(epImageString)
         }
     }
     

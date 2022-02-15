@@ -49,12 +49,7 @@
         [_avPlayer.currentItem removeObserver:self forKeyPath:@"status"];
         [_avPlayer replaceCurrentItemWithPlayerItem:playerItem];
         [self observePlayerItem:_avPlayer.currentItem];
-        [self playPlayer];
     });
-}
-
-- (void)observeItemStatus: (AVPlayerItem*) currentPlayerItem {
-    [currentPlayerItem addObserver:self forKeyPath:@"status" options: NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew  context:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
@@ -64,13 +59,9 @@ change:(NSDictionary *)change context:(void *)context {
     }
 };
 
-- (void)observeItemPlayEnd: (AVPlayerItem*) currentPlayerItem {
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didPlaybackEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:currentPlayerItem];
-}
-
 - (void)observePlayerItem: (AVPlayerItem*) currentPlayerItem {
-    [self observeItemStatus:_avPlayer.currentItem];
-    [self observeItemPlayEnd:_avPlayer.currentItem];
+    [currentPlayerItem addObserver:self forKeyPath:@"status" options: NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew  context:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didPlaybackEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:currentPlayerItem];
 }
 
 - (void)didPlaybackEnd:(NSNotification *)notification {
@@ -103,14 +94,18 @@ change:(NSDictionary *)change context:(void *)context {
 
 - (void)slideToTime: (double) sliderValue {
     CMTime duration = _avPlayer.currentItem.duration;
-    CMTime seekCMTime = CMTimeMultiplyByFloat64(duration, sliderValue);
-    [_avPlayer seekToTime:seekCMTime];
-    [_delegate updateCurrentTime:self currentTime:seekCMTime];
+    if (!CMTIME_IS_INDEFINITE(duration)) {
+        CMTime seekCMTime = CMTimeMultiplyByFloat64(duration, sliderValue);
+        [_avPlayer seekToTime:seekCMTime];
+        [_delegate updateCurrentTime:self currentTime:seekCMTime];
+    };
 }
 
 - (void)sliderTouchEnded: (double) sliderValue {
+    
     CMTime duration = _avPlayer.currentItem.duration;
-
+    
+    // Drag to the end of the progress bar.
     if (sliderValue == 1.0) {
         [_delegate updateCurrentTime:self currentTime:duration];
         playerState = PlayerStateEnded;
@@ -119,18 +114,20 @@ change:(NSDictionary *)change context:(void *)context {
         return;
     }
     
+    // Drag to middle and is likely to keep up.
     if (_avPlayer.currentItem.isPlaybackLikelyToKeepUp) {
         [self playPlayer];
         return;
     }
     
+    // Drag to middle, but needs time buffering.
     [self bufferingForSeconds:_avPlayer.currentItem player:_avPlayer];
 }
 
 - (void)bufferingForSeconds: (AVPlayerItem*) playerItem player: (AVPlayer*) player {
     __weak AudioPlayHelper *weakSelf = self;
     if (playerState != PlayerStateFailed && playerItem.status == PlayerStateReadyToPlay) {
-        [self cancelPlay:_avPlayer];
+        [self cancelPlay];
         playerState = PlayerStateBuffering;
         _gcdTimer = [[GCDTimer alloc] initWithTimeout:3.0 repeat:false completion:^{
             if (weakSelf.avPlayer.currentItem.isPlaybackLikelyToKeepUp) {
@@ -142,7 +139,7 @@ change:(NSDictionary *)change context:(void *)context {
     }
 }
 
-- (void)cancelPlay: (AVPlayer*) player {
+- (void)cancelPlay {
     [_avPlayer pause];
     playerState = PlayerStatePause;
     [_gcdTimer invalidate];

@@ -11,8 +11,6 @@ class PlayerPageViewController: UIViewController {
     
     // MARK: - properties
     
-    static var reuseIdentifier = String(describing: PlayerPageViewController.self)
-    
     var playerPageViewModel: PlayerPageViewModel?
     
     // MARK: - UI properties
@@ -59,11 +57,11 @@ class PlayerPageViewController: UIViewController {
     func binding() {
         guard let playerPageViewModel = playerPageViewModel else { return }
         
-        playerPageViewModel.epImage.bind { [weak self] image in
+        playerPageViewModel.epImageUrl.bind { [weak self] imageUrl in
             guard let self = self else { return }
-            self.playerPageView.epImageView.image = image
+            self.playerPageView.epImageView.loadImage(imageUrl, placeHolder: nil)
         }
-        
+
         playerPageViewModel.epTitle.bind { [weak self] epTitle in
             guard let self = self else { return }
             self.playerPageView.epTitleLabel.text = epTitle
@@ -78,12 +76,23 @@ class PlayerPageViewController: UIViewController {
             guard let self = self else { return }
             self.playerPageView.progressSlider.value = playProgress
         }
+        
+        playerPageViewModel.duration.bind { [weak self] duration in
+            guard let self = self else { return }
+            self.playerPageView.durationLabel.text = duration
+        }
+        
+        playerPageViewModel.currentTime.bind { [weak self] currentTime in
+            guard let self = self else { return }
+            self.playerPageView.currentTimeLabel.text = currentTime
+        }
+
     }
     
     func togglePlayButtonImage(_ playButtonType:PlayButtonType) {
         let config = UIImage.SymbolConfiguration(pointSize: 100)
         let bigImage = UIImage(systemName: playButtonType.systemName, withConfiguration: config)
-        playerPageView.playeButton.setImage(bigImage, for: .normal)
+        playerPageView.playButton.setImage(bigImage, for: .normal)
     }
     
 }
@@ -121,7 +130,6 @@ extension PlayerPageViewController: PlayerPageViewDelegate {
         case .progressTouchEnd(let sliderValue):
             playerPageViewModel.sliderTouchEnded(Double(sliderValue))
         }
-        
     }
     
 }

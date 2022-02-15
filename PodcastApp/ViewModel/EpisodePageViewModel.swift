@@ -6,11 +6,10 @@
 //
 
 import UIKit
-import FeedKit
 
 struct PlayerDetail {
     let epTitle: String?
-    let epImage: UIImage?
+    let epImageUrl: String?
     let audioLinkUrl: String?
 }
 
@@ -20,7 +19,7 @@ class EpisodePageViewModel {
     
     let podcastTitle: Box<String> = Box("")
     let epTitle: Box<String> = Box("")
-    let epImage: Box<UIImage> = Box(UIImage())
+    let epImageUrl: Box<String> = Box("")
     let epDescription: Box<String> = Box("")
     
     // MARK: - properties
@@ -44,30 +43,36 @@ class EpisodePageViewModel {
     
     // MARK: - method
     
+    /// Parse feed item and store in local properties.
     func parseFeedItem() {
         guard episodeDetails.count > currentEpisodeIndex else { return }
         let currentEpisodeDetail = episodeDetails[currentEpisodeIndex]
         guard let podcastTitile = currentEpisodeDetail.podcastTitile,
               let epTitle = currentEpisodeDetail.epTitle,
-              let epImage = currentEpisodeDetail.epImage,
+              let epImage = currentEpisodeDetail.epImageUrl ,
               let epDescription = currentEpisodeDetail.epDescription else { return }
         
         self.podcastTitle.value = podcastTitile
         self.epTitle.value = epTitle
-        self.epImage.value = epImage
+        self.epImageUrl.value = epImage
         self.epDescription.value = epDescription
     }
     
+    /// Create PlayerPageViewModel.
+    /// - Returns: The view model prepare for next page.
     func createPlayerPageViewModel() -> PlayerPageViewModel {
         let playerDetails = transformToPlayerDetails(episodeDetails: episodeDetails)
         let playerPageViewModel = PlayerPageViewModel(playerDetails: playerDetails, currentEpisodeIndex: currentEpisodeIndex)
         return playerPageViewModel
     }
     
+    /// Transform EpisodeDetail array to PlayerDetails array.
+    /// - Parameter episodeDetails: EpisodeDetail array.
+    /// - Returns: PlayerDetail array.
     func transformToPlayerDetails(episodeDetails:[EpisodeDetail]) -> [PlayerDetail] {
         let playerDetails = episodeDetails.map {
             PlayerDetail(epTitle: $0.epTitle,
-                         epImage: $0.epImage,
+                         epImageUrl: $0.epImageUrl,
                          audioLinkUrl: $0.audioLinkUrl)
         }
         return playerDetails

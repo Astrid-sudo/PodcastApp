@@ -11,6 +11,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TimeCalculator : NSObject
+
+/*!
+ * @discussion Transfer seconds from float to timecode String.
+ * @param seconds Seconds in float.
+ * @return Timecode string.
+ */
 + (NSString*)floatToTimecodeString: (float) seconds;
 
 @end

@@ -28,12 +28,7 @@ class HomePageViewController: UIViewController {
         return table
     }()
     
-    private lazy var indicatorView: UIActivityIndicatorView = {
-        let view = UIActivityIndicatorView(style: .large)
-        view.color = .darkGray
-        view.hidesWhenStopped = true
-        return view
-    }()
+    var noNetworkAlert: UIAlertController?
     
     // MARK: - life cycle
     
@@ -41,9 +36,17 @@ class HomePageViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setTableView()
-        setIndicatorView()
         binding()
-        indicatorView.startAnimating()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isHidden = false
     }
     
     // MARK: - config UI method
@@ -59,22 +62,29 @@ class HomePageViewController: UIViewController {
         ])
     }
     
-    private func setIndicatorView() {
-        tableView.addSubview(indicatorView)
-        indicatorView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            indicatorView.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
-            indicatorView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor),
-        ])
-    }
-    
     // MARK: - method
     
     func binding() {
+        
+        homePageViewModel.networkAvailable.bind { [weak self] bool in
+            guard let self = self else { return }
+            if bool {
+                if let noNetworkAlert = self.noNetworkAlert {
+                    self.dismissAlert(noNetworkAlert, completion: nil)
+                }
+            } else {
+                self.noNetworkAlert = self.popAlert(title: "無網路連線", message: "請檢查您的網路連線")
+            }
+        }
+        
         homePageViewModel.rssFeedItems.bind { [weak self] _ in
             guard let self = self else { return }
             self.tableView.reloadData()
-            self.indicatorView.stopAnimating()
+        }
+        
+        homePageViewModel.homeImageUrlString.bind { [weak self] _ in
+            guard let self = self else { return }
+            self.tableView.reloadData()
         }
         
         homePageViewModel.episodePageViewModel.bind { [weak self] episodePageViewModel in
@@ -85,6 +95,13 @@ class HomePageViewController: UIViewController {
         }
     }
     
+    func prepareForEpisodePage(episodeIndex: Int) {
+        guard let rssFeedTitle = homePageViewModel.rssFeedTitle else { return }
+        let episodeDetails = homePageViewModel.transformToEpisodeDetails(rssFeedItems: homePageViewModel.rssFeedItems.value, podcastTitle: rssFeedTitle)
+        let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: episodeIndex)
+        self.homePageViewModel.episodePageViewModel.value = episodeViewModel
+    }
+    
     func pushToEpisodePage(episodePageViewModel: EpisodePageViewModel) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let episodePageViewController = storyboard.instantiateViewController(withIdentifier: EpisodePageViewController.reuseIdentifier) as? EpisodePageViewController else { return }
@@ -92,42 +109,6 @@ class HomePageViewController: UIViewController {
         navigationController?.pushViewController(episodePageViewController, animated: true)
     }
     
-    private func cellDownloadWithUrlSession(at indexPath: IndexPath) {
-        guard let url = URL(string: homePageViewModel.rssFeedItems.value[indexPath.row].rssEpImageUrl) else { return }
-        URLSession.shared.dataTask(with: url) {
-        [weak self] data, response, error in
-        guard let self = self,
-          let data = data,
-          let image = UIImage(data: data) else {
-            return
-        }
-
-        DispatchQueue.main.async {
-            if let cell = self.tableView.cellForRow(at: indexPath) as? HomePageTableViewCell {
-            cell.displayImage(image: image)
-          }
-        }
-      }.resume()
-    }
-    
-    private func nextDownloadWithUrlSession(at indexPath: IndexPath, nextViewModel: EpisodePageViewModel) {
-        guard let url = URL(string: homePageViewModel.rssFeedItems.value[indexPath.row].rssEpImageUrl),
-              let rssFeedTitle = homePageViewModel.rssFeedTitle else { return }
-        URLSession.shared.dataTask(with: url) {
-        [weak self] data, response, error in
-        guard let self = self,
-          let data = data,
-          let image = UIImage(data: data) else {
-            return
-        }
-        DispatchQueue.main.async {
-            let episodeDetails = self.homePageViewModel.transformToEpisodeDetails(rssFeedItems: self.homePageViewModel.rssFeedItems.value, podcastTitle: rssFeedTitle, epImage: image)
-            let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: indexPath.row)
-            self.homePageViewModel.episodePageViewModel.value = episodeViewModel
-        }
-      }.resume()
-    }
-
 }
 
 // MARK: - UITableViewDataSource
@@ -141,10 +122,9 @@ extension HomePageViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let row = indexPath.row
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomePageTableViewCell.reuseIdentifier) as? HomePageTableViewCell else { return UITableViewCell()}
-        cell.configCell(image: nil,
-                        epTitle: homePageViewModel.rssFeedItems.value[row].rssTitle,
-                        updateDate: homePageViewModel.rssFeedItems.value[row].rssPubDate)
-        cellDownloadWithUrlSession(at: indexPath)
+        
+        cell.configCell(imageURLString: homePageViewModel.rssFeedItems.value[row].rssEpImageUrl , epTitle: homePageViewModel.rssFeedItems.value[row].rssTitle, updateDate: homePageViewModel.rssFeedItems.value[row].rssPubDate)
+        
         return cell
     }
     
@@ -155,17 +135,8 @@ extension HomePageViewController: UITableViewDataSource {
 extension HomePageViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        var myImage: UIImage?
-        if let string = homePageViewModel.homeImageUrlString {
-            if let homeImageURL = URL(string: string) {
-                if let data = try? Data(contentsOf: homeImageURL) {
-                    myImage = UIImage(data: data)
-                }
-            }
-        }
-        
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomePageTableViewHeader.reuseIdentifier) as? HomePageTableViewHeader else { return UIView()}
-        headerView.configImage(image: myImage)
+        headerView.configImage(urlString: homePageViewModel.homeImageUrlString.value)
         return headerView
     }
     
@@ -174,12 +145,8 @@ extension HomePageViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let row = indexPath.row
-        guard let rssFeedTitle = homePageViewModel.rssFeedTitle else { return }
-        let episodeDetails = homePageViewModel.transformToEpisodeDetails(rssFeedItems: homePageViewModel.rssFeedItems.value, podcastTitle: rssFeedTitle, epImage: nil)
-        let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: row)
-        nextDownloadWithUrlSession(at: indexPath, nextViewModel: episodeViewModel)
+        self.prepareForEpisodePage(episodeIndex: indexPath.row)
     }
-
+    
 }
 
