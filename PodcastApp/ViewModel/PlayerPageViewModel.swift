@@ -130,7 +130,9 @@ class PlayerPageViewModel: NSObject {
         if currentEpisodeIndex > 0 {
             currentEpisodeIndex -= 1
             proceedToEpisode(ep: currentEpisodeIndex)
-            audioPlayHelper.playPlayer()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.audioPlayHelper.playPlayer()
+            }
         } else {
             if let audioLink = playerDetails[0].audioLinkUrl {
                 keepCurrentEpisode(with: audioLink)
