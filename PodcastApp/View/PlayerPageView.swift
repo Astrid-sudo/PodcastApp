@@ -55,6 +55,7 @@ class PlayerPageView: UIView {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
+        image.addIndicator()
         return image
     }()
     

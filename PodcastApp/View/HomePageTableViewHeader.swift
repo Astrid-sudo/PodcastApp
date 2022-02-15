@@ -9,16 +9,13 @@ import UIKit
 
 class HomePageTableViewHeader: UITableViewHeaderFooterView {
     
-    // MARK: - properties
-    
-    static let reuseIdentifier = String(describing: HomePageTableViewHeader.self)
-    
     // MARK: - UI properties
     
     private lazy var headerImage: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
+        image.addIndicator()
         return image
     }()
     
@@ -46,8 +43,8 @@ class HomePageTableViewHeader: UITableViewHeaderFooterView {
         ])
     }
     
-    func configImage(image: UIImage?) {
-        headerImage.image = image
+    func configImage(urlString: String) {
+        headerImage.loadImage(urlString)
     }
     
 }

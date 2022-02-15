@@ -9,7 +9,7 @@ import UIKit
 
 struct PlayerDetail {
     let epTitle: String?
-    let epImage: UIImage?
+    let epImageUrl: String?
     let audioLinkUrl: String?
 }
 
@@ -19,7 +19,7 @@ class EpisodePageViewModel {
     
     let podcastTitle: Box<String> = Box("")
     let epTitle: Box<String> = Box("")
-    let epImage: Box<UIImage> = Box(UIImage())
+    let epImageUrl: Box<String> = Box("")
     let epDescription: Box<String> = Box("")
     
     // MARK: - properties
@@ -49,12 +49,12 @@ class EpisodePageViewModel {
         let currentEpisodeDetail = episodeDetails[currentEpisodeIndex]
         guard let podcastTitile = currentEpisodeDetail.podcastTitile,
               let epTitle = currentEpisodeDetail.epTitle,
-              let epImage = currentEpisodeDetail.epImage,
+              let epImage = currentEpisodeDetail.epImageUrl ,
               let epDescription = currentEpisodeDetail.epDescription else { return }
         
         self.podcastTitle.value = podcastTitile
         self.epTitle.value = epTitle
-        self.epImage.value = epImage
+        self.epImageUrl.value = epImage
         self.epDescription.value = epDescription
     }
     
@@ -72,7 +72,7 @@ class EpisodePageViewModel {
     func transformToPlayerDetails(episodeDetails:[EpisodeDetail]) -> [PlayerDetail] {
         let playerDetails = episodeDetails.map {
             PlayerDetail(epTitle: $0.epTitle,
-                         epImage: $0.epImage,
+                         epImageUrl: $0.epImageUrl,
                          audioLinkUrl: $0.audioLinkUrl)
         }
         return playerDetails

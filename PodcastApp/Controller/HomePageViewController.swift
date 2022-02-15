@@ -39,6 +39,16 @@ class HomePageViewController: UIViewController {
         binding()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isHidden = false
+    }
+    
     // MARK: - config UI method
     
     func setTableView() {
@@ -72,7 +82,7 @@ class HomePageViewController: UIViewController {
             self.tableView.reloadData()
         }
         
-        homePageViewModel.homeImage.bind { [weak self] _ in
+        homePageViewModel.homeImageUrlString.bind { [weak self] _ in
             guard let self = self else { return }
             self.tableView.reloadData()
         }
@@ -85,9 +95,9 @@ class HomePageViewController: UIViewController {
         }
     }
     
-    func prepareForEpisodePage(image: UIImage?, episodeIndex: Int) {
+    func prepareForEpisodePage(episodeIndex: Int) {
         guard let rssFeedTitle = homePageViewModel.rssFeedTitle else { return }
-        let episodeDetails = homePageViewModel.transformToEpisodeDetails(rssFeedItems: homePageViewModel.rssFeedItems.value, podcastTitle: rssFeedTitle, epImage: image)
+        let episodeDetails = homePageViewModel.transformToEpisodeDetails(rssFeedItems: homePageViewModel.rssFeedItems.value, podcastTitle: rssFeedTitle)
         let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: episodeIndex)
         self.homePageViewModel.episodePageViewModel.value = episodeViewModel
     }
@@ -98,7 +108,7 @@ class HomePageViewController: UIViewController {
         episodePageViewController.episodePageViewModel = episodePageViewModel
         navigationController?.pushViewController(episodePageViewController, animated: true)
     }
-
+    
 }
 
 // MARK: - UITableViewDataSource
@@ -113,18 +123,8 @@ extension HomePageViewController: UITableViewDataSource {
         let row = indexPath.row
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomePageTableViewCell.reuseIdentifier) as? HomePageTableViewCell else { return UITableViewCell()}
         
-        if homePageViewModel.imageInCache(indexPath: indexPath) {
-            cell.configCell(image: homePageViewModel.cacheEpImages[indexPath.row],
-                            epTitle: homePageViewModel.rssFeedItems.value[row].rssTitle,
-                            updateDate: homePageViewModel.rssFeedItems.value[row].rssPubDate)
-        } else {
-            homePageViewModel.downloadToCache(indexPath: indexPath) { [weak self] image in
-                guard let self = self else { return }
-                cell.configCell(image: image,
-                                epTitle: self.homePageViewModel.rssFeedItems.value[row].rssTitle,
-                                updateDate: self.homePageViewModel.rssFeedItems.value[row].rssPubDate)
-            }
-        }
+        cell.configCell(imageURLString: homePageViewModel.rssFeedItems.value[row].rssEpImageUrl , epTitle: homePageViewModel.rssFeedItems.value[row].rssTitle, updateDate: homePageViewModel.rssFeedItems.value[row].rssPubDate)
+        
         return cell
     }
     
@@ -136,8 +136,7 @@ extension HomePageViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomePageTableViewHeader.reuseIdentifier) as? HomePageTableViewHeader else { return UIView()}
-        let image = homePageViewModel.homeImage.value
-        headerView.configImage(image: image)
+        headerView.configImage(urlString: homePageViewModel.homeImageUrlString.value)
         return headerView
     }
     
@@ -146,14 +145,7 @@ extension HomePageViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if homePageViewModel.imageInCache(indexPath: indexPath) {
-            prepareForEpisodePage(image: homePageViewModel.cacheEpImages[indexPath.row], episodeIndex: indexPath.row)
-        } else {
-            homePageViewModel.downloadToCache(indexPath: indexPath) { [weak self] image in
-                guard let self = self else { return }
-                self.prepareForEpisodePage(image: image, episodeIndex: indexPath.row)
-            }
-        }
+        self.prepareForEpisodePage(episodeIndex: indexPath.row)
     }
     
 }

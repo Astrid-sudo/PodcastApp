@@ -4,5 +4,5 @@ platform :ios, '10.0'
 use_frameworks!
 
 target 'PodcastApp' do
-  
+    pod 'Kingfisher'
 end

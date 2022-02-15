@@ -11,8 +11,6 @@ class PlayerPageViewController: UIViewController {
     
     // MARK: - properties
     
-    static var reuseIdentifier = String(describing: PlayerPageViewController.self)
-    
     var playerPageViewModel: PlayerPageViewModel?
     
     // MARK: - UI properties
@@ -59,11 +57,11 @@ class PlayerPageViewController: UIViewController {
     func binding() {
         guard let playerPageViewModel = playerPageViewModel else { return }
         
-        playerPageViewModel.epImage.bind { [weak self] image in
+        playerPageViewModel.epImageUrl.bind { [weak self] imageUrl in
             guard let self = self else { return }
-            self.playerPageView.epImageView.image = image
+            self.playerPageView.epImageView.loadImage(imageUrl, placeHolder: nil)
         }
-        
+
         playerPageViewModel.epTitle.bind { [weak self] epTitle in
             guard let self = self else { return }
             self.playerPageView.epTitleLabel.text = epTitle
@@ -121,7 +119,6 @@ extension PlayerPageViewController: PlayerPageViewDelegate {
         case .progressTouchEnd(let sliderValue):
             playerPageViewModel.sliderTouchEnded(Double(sliderValue))
         }
-        
     }
     
 }

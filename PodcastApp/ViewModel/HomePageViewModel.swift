@@ -10,7 +10,7 @@ import UIKit
 struct EpisodeDetail {
     let podcastTitile: String?
     let epTitle: String?
-    let epImage: UIImage?
+    let epImageUrl: String?
     let epDescription: String?
     let audioLinkUrl: String?
 }
@@ -21,7 +21,8 @@ class HomePageViewModel: NSObject {
 
     let networkAvailable: Box<Bool> = Box(true)
     let rssFeedItems: Box<[RssItem]> = Box([RssItem]())
-    let homeImage: Box<UIImage> = Box(UIImage())
+//    let homeImage: Box<UIImage> = Box(UIImage())
+    var homeImageUrlString: Box<String> = Box("")
     let episodePageViewModel: Box<EpisodePageViewModel> = Box(EpisodePageViewModel())
 
     // MARK: - properties
@@ -36,8 +37,6 @@ class HomePageViewModel: NSObject {
     var reeFeedUrl = "https://feeds.soundcloud.com/users/soundcloud:users:322164009/sounds.rss"
     var originRssFeedItems = [RssItem]()
     var rssFeedTitle: String?
-    var homeImageUrlString: String?
-    var cacheEpImages: [Int: UIImage] = [:]
     var feedParedFinished = false
     
     // MARK: - init
@@ -62,15 +61,13 @@ class HomePageViewModel: NSObject {
     /// - Parameters:
     ///   - rssFeedItems: Rss item array fetched from RSS Feed url.
     ///   - podcastTitle: Podcast title fetched from RSS Feed url.
-    ///   - epImage: EpImage fetched from RSS Feed url.
     /// - Returns: EpisodeDetail array
     func transformToEpisodeDetails(rssFeedItems:[RssItem],
-                                   podcastTitle: String,
-                                   epImage: UIImage?) -> [EpisodeDetail] {
+                                   podcastTitle: String) -> [EpisodeDetail] {
         let episodeDetails = rssFeedItems.map {
             EpisodeDetail(podcastTitile: podcastTitle,
                           epTitle: $0.rssTitle,
-                          epImage: epImage,
+                          epImageUrl: $0.rssEpImageUrl,
                           epDescription: $0.rssDescription,
                           audioLinkUrl: $0.rssAudioUrl)
         }
@@ -106,44 +103,6 @@ class HomePageViewModel: NSObject {
         return ""
     }
     
-    /// Download image with url string and pass the image out by closure.
-    /// - Parameters:
-    ///   - urlString: Image url string.
-    ///   - completion: The closure will be execute after finishing download image.
-    func downloadImage(urlString: String, completion: @escaping(UIImage) -> Void) {
-        guard let url = URL(string: urlString) else { return }
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data,
-                  let image = UIImage(data: data) else {
-                      print("Failed download image \(String(describing: error))")
-                      return }
-            DispatchQueue.main.async {
-                completion(image)
-            }
-        }.resume()
-    }
-    
-    /// Download image with url string and pass the image out by closure and store in cache dictionary.
-    /// - Parameters:
-    ///   - indexPath: The index of the image in rss feed data.
-    ///   - completion: The closure will be execute after finishing download image.
-    func downloadToCache(indexPath: IndexPath, completion: @escaping(UIImage) -> Void) {
-        let urlString = rssFeedItems.value[indexPath.row].rssEpImageUrl
-        downloadImage(urlString: urlString) { [weak self] image in
-            guard let self = self else { return }
-            self.cacheEpImages[indexPath.row] = image
-            completion(image)
-        }
-    }
-    
-    /// Check whether an image is already in cache dictionary.
-    /// - Parameters:
-    /// - indexPath: The index of the image in rss feed data.
-    /// - Returns: True if the image in already in the cache dictionary, vice versa.
-    func imageInCache(indexPath: IndexPath) -> Bool {
-        return cacheEpImages[indexPath.row] != nil
-    }
-    
 }
 
 // MARK: - RssHelperDelegate
@@ -156,13 +115,7 @@ extension HomePageViewModel: RssHelperDelegate {
         self.originRssFeedItems = rssItemArray
         self.rssFeedItems.value = transformItemsDate(items: originRssFeedItems)
         self.rssFeedTitle = String(infoTitle)
-        homeImageUrlString = infoImage
-        if let imageUrl = homeImageUrlString {
-            downloadImage(urlString: imageUrl) { [weak self] image in
-                guard let self = self else { return }
-                self.homeImage.value = image
-            }
-        }
+        homeImageUrlString.value = infoImage
     }
     
     func failedFetchRss(_ error: Error) {

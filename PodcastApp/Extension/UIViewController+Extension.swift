@@ -7,5 +7,5 @@
 
 import UIKit
 
-extension UIViewController: AlertPresentable {}
+extension UIViewController: AlertPresentable, ReuseID {}
 

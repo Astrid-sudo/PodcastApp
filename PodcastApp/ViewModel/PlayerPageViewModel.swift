@@ -13,7 +13,7 @@ class PlayerPageViewModel: NSObject {
     // MARK: - properties be observed
     
     let epTitle: Box<String> = Box("")
-    let epImage: Box<UIImage> = Box(UIImage())
+    let epImageUrl: Box<String> = Box(String())
     let playButtonType: Box<PlayButtonType> = Box(.play)
     let playProgress: Box<Float> = Box(.zero)
     let currentTime = Box("")
@@ -52,11 +52,11 @@ class PlayerPageViewModel: NSObject {
         guard playerDetails.count > currentEpisodeIndex else { return }
         let currentPlayerDetail = playerDetails[currentEpisodeIndex]
         guard let epTitle = currentPlayerDetail.epTitle,
-              let epImage = currentPlayerDetail.epImage,
+              let epImageUrl = currentPlayerDetail.epImageUrl,
               let audioLinkUrl = currentPlayerDetail.audioLinkUrl else { return }
         
         self.epTitle.value = epTitle
-        self.epImage.value = epImage
+        self.epImageUrl.value = epImageUrl
         self.audioLink = audioLinkUrl
     }
     
@@ -158,10 +158,10 @@ class PlayerPageViewModel: NSObject {
     func proceedToEpisode(ep: Int) {
         guard let audioLink = playerDetails[ep].audioLinkUrl,
               let epTitle = playerDetails[ep].epTitle,
-              let epImage = playerDetails[ep].epImage else { return }
+              let epImageUrl = playerDetails[ep].epImageUrl else { return }
         audioPlayHelper.replaceCurrentItem(audioLink)
         self.epTitle.value = epTitle
-        self.epImage.value = epImage
+        self.epImageUrl.value = epImageUrl
     }
     
     
