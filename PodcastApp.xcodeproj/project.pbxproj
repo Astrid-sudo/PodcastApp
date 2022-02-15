@@ -27,6 +27,9 @@
 		56346EDC27B5204100AECA6D /* AudioPlayHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 56346EDB27B5204100AECA6D /* AudioPlayHelper.m */; };
 		56346EDF27B54E4000AECA6D /* TimeCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 56346EDE27B54E4000AECA6D /* TimeCalculator.m */; };
 		56346EE227B5500400AECA6D /* GCDTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 56346EE127B5500400AECA6D /* GCDTimer.m */; };
+		563F536227BB70E800C2094B /* NetworkCheckable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563F536127BB70E800C2094B /* NetworkCheckable.swift */; };
+		563F536427BB713700C2094B /* AlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563F536327BB713700C2094B /* AlertPresentable.swift */; };
+		563F536727BB72F200C2094B /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563F536627BB72F200C2094B /* UIViewController+Extension.swift */; };
 		564A802F27B664130084F5E3 /* RssHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 564A802E27B664130084F5E3 /* RssHelper.m */; };
 		850CE8B3780FA486D76CD736 /* Pods_PodcastApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCD8FC6EABEDA682D10FEF7 /* Pods_PodcastApp.framework */; };
 /* End PBXBuildFile section */
@@ -61,6 +64,9 @@
 		56346EDE27B54E4000AECA6D /* TimeCalculator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeCalculator.m; sourceTree = "<group>"; };
 		56346EE027B5500400AECA6D /* GCDTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDTimer.h; sourceTree = "<group>"; };
 		56346EE127B5500400AECA6D /* GCDTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDTimer.m; sourceTree = "<group>"; };
+		563F536127BB70E800C2094B /* NetworkCheckable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkCheckable.swift; sourceTree = "<group>"; };
+		563F536327BB713700C2094B /* AlertPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresentable.swift; sourceTree = "<group>"; };
+		563F536627BB72F200C2094B /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		564A802D27B664130084F5E3 /* RssHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RssHelper.h; sourceTree = "<group>"; };
 		564A802E27B664130084F5E3 /* RssHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RssHelper.m; sourceTree = "<group>"; };
 		E3B1AB7522DC958A2AB53F81 /* Pods-PodcastApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PodcastApp.release.xcconfig"; path = "Target Support Files/Pods-PodcastApp/Pods-PodcastApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -99,6 +105,7 @@
 		56346E9E27B4E40200AECA6D /* PodcastApp */ = {
 			isa = PBXGroup;
 			children = (
+				563F536527BB72C500C2094B /* Extension */,
 				56346EC127B4EAC500AECA6D /* Model */,
 				56346EBE27B4EA6E00AECA6D /* ViewModel */,
 				56346EBB27B4E9C500AECA6D /* Controller */,
@@ -118,6 +125,8 @@
 			isa = PBXGroup;
 			children = (
 				56346EB427B4E8BC00AECA6D /* Box.swift */,
+				563F536127BB70E800C2094B /* NetworkCheckable.swift */,
+				563F536327BB713700C2094B /* AlertPresentable.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -169,6 +178,14 @@
 				5605AA7727B79A8700759B21 /* RssItem.m */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		563F536527BB72C500C2094B /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				563F536627BB72F200C2094B /* UIViewController+Extension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		788725451B00A9C3C41AE0E6 /* Pods */ = {
@@ -288,7 +305,9 @@
 			files = (
 				56346EB827B4E90100AECA6D /* HomePageTableViewCell.swift in Sources */,
 				564A802F27B664130084F5E3 /* RssHelper.m in Sources */,
+				563F536427BB713700C2094B /* AlertPresentable.swift in Sources */,
 				56346EBD27B4E9E900AECA6D /* HomePageViewController.swift in Sources */,
+				563F536227BB70E800C2094B /* NetworkCheckable.swift in Sources */,
 				56346EDC27B5204100AECA6D /* AudioPlayHelper.m in Sources */,
 				56346EDF27B54E4000AECA6D /* TimeCalculator.m in Sources */,
 				56346EB527B4E8BC00AECA6D /* Box.swift in Sources */,
@@ -302,6 +321,7 @@
 				5605AA7827B79A8700759B21 /* RssItem.m in Sources */,
 				56346ECD27B4F5AD00AECA6D /* PlayerPageViewController.swift in Sources */,
 				56346EA227B4E40200AECA6D /* SceneDelegate.swift in Sources */,
+				563F536727BB72F200C2094B /* UIViewController+Extension.swift in Sources */,
 				56346EE227B5500400AECA6D /* GCDTimer.m in Sources */,
 				56346EC527B4F09100AECA6D /* EpisodePageViewModel.swift in Sources */,
 			);

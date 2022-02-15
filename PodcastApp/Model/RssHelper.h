@@ -21,7 +21,7 @@
  * @param infoImage The infoImageUrl fetched from url
  */
 - (void)suceededFetchRss:(NSArray*)rssItems infoTitle:(NSString*)infoTitle infoImage:(NSString*)infoImage;
-- (void)failedFetchRss;
+- (void)failedFetchRss: (NSError*)error;
 @end
 
 @interface RssHelper : NSObject <NSXMLParserDelegate> {

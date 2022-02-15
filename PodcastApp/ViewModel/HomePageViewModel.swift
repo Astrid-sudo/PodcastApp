@@ -17,26 +17,46 @@ struct EpisodeDetail {
 
 class HomePageViewModel: NSObject {
     
-    let rssHelper = RssHelper()
-    var originRssFeedItems = [RssItem]()
+    // MARK: - properties be observed
+
+    let networkAvailable: Box<Bool> = Box(true)
     let rssFeedItems: Box<[RssItem]> = Box([RssItem]())
+    let homeImage: Box<UIImage> = Box(UIImage())
+    let episodePageViewModel: Box<EpisodePageViewModel> = Box(EpisodePageViewModel())
+
+    // MARK: - properties
+    
+    private(set) lazy var networkManager: NetworkManager = {
+        return NetworkManager()
+    }()
+    
+    private lazy var rssHelper: RssHelper = {
+        return RssHelper()
+    }()
+    var reeFeedUrl = "https://feeds.soundcloud.com/users/soundcloud:users:322164009/sounds.rss"
+    var originRssFeedItems = [RssItem]()
     var rssFeedTitle: String?
     var homeImageUrlString: String?
-    
     var cacheEpImages: [Int: UIImage] = [:]
-    var homeImage: Box<UIImage> = Box(UIImage())
-
-    var episodePageViewModel: Box<EpisodePageViewModel> = Box(EpisodePageViewModel())
+    var feedParedFinished = false
     
     // MARK: - init
     
     override init() {
         super.init()
-        rssHelper?.delegate = self
-        rssHelper?.parsefeed(withUrlString: "https://feeds.soundcloud.com/users/soundcloud:users:322164009/sounds.rss")
+        checkNetwork(connectionHandler: connectionHandler, noConnectionHandler: noConnectionHandler)
+        rssHelper.delegate = self
+        rssHelper.parsefeed(withUrlString: reeFeedUrl)
     }
     
     // MARK: - method
+    
+    /// Fetch and parse RssFeed if parsing haven't finish.
+    func continueParseRssFeed() {
+        if !feedParedFinished {
+            rssHelper.parsefeed(withUrlString: reeFeedUrl)
+        }
+    }
     
     /// Gathering data to create an EpisodeDetail array.
     /// - Parameters:
@@ -94,7 +114,9 @@ class HomePageViewModel: NSObject {
         guard let url = URL(string: urlString) else { return }
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data,
-                  let image = UIImage(data: data) else { return }
+                  let image = UIImage(data: data) else {
+                      print("Failed download image \(String(describing: error))")
+                      return }
             DispatchQueue.main.async {
                 completion(image)
             }
@@ -129,6 +151,7 @@ class HomePageViewModel: NSObject {
 extension HomePageViewModel: RssHelperDelegate {
     
     func suceededFetchRss(_ rssItems: [Any], infoTitle: String, infoImage: String) {
+        feedParedFinished = true
         let rssItemArray = rssItems.compactMap({ $0 as? RssItem})
         self.originRssFeedItems = rssItemArray
         self.rssFeedItems.value = transformItemsDate(items: originRssFeedItems)
@@ -142,8 +165,29 @@ extension HomePageViewModel: RssHelperDelegate {
         }
     }
     
-    func failedFetchRss() {
+    func failedFetchRss(_ error: Error) {
+        print("Failed fetch rss \(error)")
+    }
+
+}
+
+// MARK: - NetworkCheckable
+
+extension HomePageViewModel: NetworkCheckable {
+
+    private func connectionHandler() {
+        DispatchQueue.main.async {
+                self.continueParseRssFeed()
+            self.networkAvailable.value = true
+        }
     }
     
+    private func noConnectionHandler() {
+        DispatchQueue.main.async {
+            self.networkAvailable.value = false
+        }
+    }
     
 }
+
+

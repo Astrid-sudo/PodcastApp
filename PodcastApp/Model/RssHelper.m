@@ -124,4 +124,8 @@
     [_delegate suceededFetchRss:_rssItems infoTitle:_rssInfoTitle infoImage:_rssInfoImage];
 }
 
+- (void)parser:(NSXMLParser *)parser parseErrorOccurred:(NSError *)parseError {
+    [_delegate failedFetchRss:parseError];
+}
+
 @end

@@ -28,6 +28,8 @@ class HomePageViewController: UIViewController {
         return table
     }()
     
+    var noNetworkAlert: UIAlertController?
+    
     // MARK: - life cycle
     
     override func viewDidLoad() {
@@ -53,6 +55,18 @@ class HomePageViewController: UIViewController {
     // MARK: - method
     
     func binding() {
+        
+        homePageViewModel.networkAvailable.bind { [weak self] bool in
+            guard let self = self else { return }
+            if bool {
+                if let noNetworkAlert = self.noNetworkAlert {
+                    self.dismissAlert(noNetworkAlert, completion: nil)
+                }
+            } else {
+                self.noNetworkAlert = self.popAlert(title: "無網路連線", message: "請檢查您的網路連線")
+            }
+        }
+        
         homePageViewModel.rssFeedItems.bind { [weak self] _ in
             guard let self = self else { return }
             self.tableView.reloadData()
