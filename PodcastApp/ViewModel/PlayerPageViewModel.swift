@@ -69,6 +69,10 @@ class PlayerPageViewModel: NSObject {
     /// Change current time.
     /// - Parameter currentTime: Current currentTime from audioPlayHelper.
     func changeCurrentTime(currentTime: CMTime) {
+        guard !currentTime.isIndefinite else {
+            self.currentTime.value = "00:00:00"
+            return
+        }
         let currenTimeSeconds = Float(CMTimeGetSeconds(currentTime))
         self.currentTime.value = TimeCalculator.float(toTimecodeString: currenTimeSeconds)
     }
@@ -76,6 +80,10 @@ class PlayerPageViewModel: NSObject {
     /// Change duration.
     /// - Parameter duration: Current duration from audioPlayHelper.
     func changeDuration(duration: CMTime) {
+        guard !duration.isIndefinite else {
+            self.duration.value = "00:00:00"
+            return 
+        }
         let durationSeconds = Float(CMTimeGetSeconds(duration))
         self.duration.value = TimeCalculator.float(toTimecodeString: durationSeconds)
     }
