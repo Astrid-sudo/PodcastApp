@@ -76,12 +76,23 @@ class PlayerPageViewController: UIViewController {
             guard let self = self else { return }
             self.playerPageView.progressSlider.value = playProgress
         }
+        
+        playerPageViewModel.duration.bind { [weak self] duration in
+            guard let self = self else { return }
+            self.playerPageView.durationLabel.text = duration
+        }
+        
+        playerPageViewModel.currentTime.bind { [weak self] currentTime in
+            guard let self = self else { return }
+            self.playerPageView.currentTimeLabel.text = currentTime
+        }
+
     }
     
     func togglePlayButtonImage(_ playButtonType:PlayButtonType) {
         let config = UIImage.SymbolConfiguration(pointSize: 100)
         let bigImage = UIImage(systemName: playButtonType.systemName, withConfiguration: config)
-        playerPageView.playeButton.setImage(bigImage, for: .normal)
+        playerPageView.playButton.setImage(bigImage, for: .normal)
     }
     
 }

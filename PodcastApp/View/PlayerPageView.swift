@@ -83,7 +83,36 @@ class PlayerPageView: UIView {
         return slider
     }()
     
-    lazy var playeButton: UIButton = {
+     lazy var durationLabel: UILabel = {
+        let label = UILabel()
+        label.font = .monospacedDigitSystemFont(ofSize: 10, weight: .regular)
+        label.textColor = .black
+        label.textAlignment = .center
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        return label
+    }()
+    
+     lazy var currentTimeLabel: UILabel = {
+        let label = UILabel()
+        label.font = .monospacedDigitSystemFont(ofSize: 10, weight: .regular)
+        label.textColor = .black
+        label.textAlignment = .center
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        return label
+    }()
+    
+    private lazy var progressStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [currentTimeLabel, progressSlider,  durationLabel])
+        stackView.axis = .horizontal
+        stackView.spacing = 4
+        stackView.alignment = .center
+        stackView.distribution = .fillProportionally
+        return stackView
+    }()
+    
+    lazy var playButton: UIButton = {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 65)
         let bigImage = UIImage(systemName: "play.circle", withConfiguration: config)
@@ -128,7 +157,7 @@ class PlayerPageView: UIView {
         setEpisodeImage()
         setEpisodeTitleLabel()
         setStackView()
-        setProgressSlider()
+        setProgressStackView()
     }
     
     required init?(coder: NSCoder) {
@@ -167,20 +196,20 @@ class PlayerPageView: UIView {
             stackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -padding)
         ])
         stackView.addArrangedSubview(backwardButton)
-        stackView.addArrangedSubview(playeButton)
+        stackView.addArrangedSubview(playButton)
         stackView.addArrangedSubview(forwardButton)
     }
     
-    private func setProgressSlider() {
-        self.addSubview(progressSlider)
-        progressSlider.translatesAutoresizingMaskIntoConstraints = false
+    private func setProgressStackView() {
+        self.addSubview(progressStackView)
+        progressStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            progressSlider.leadingAnchor.constraint(equalTo: epImageView.leadingAnchor),
-            progressSlider.trailingAnchor.constraint(equalTo: epImageView.trailingAnchor),
-            progressSlider.bottomAnchor.constraint(equalTo: stackView.topAnchor, constant: -padding / 2)
+            progressStackView.leadingAnchor.constraint(equalTo: epImageView.leadingAnchor),
+            progressStackView.trailingAnchor.constraint(equalTo: epImageView.trailingAnchor),
+            progressStackView.bottomAnchor.constraint(equalTo: stackView.topAnchor, constant: -padding / 2)
         ])
     }
-    
+
     // MARK: - Action
     
     @objc func togglePlay() {

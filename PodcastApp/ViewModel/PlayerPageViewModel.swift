@@ -16,8 +16,8 @@ class PlayerPageViewModel: NSObject {
     let epImageUrl: Box<String> = Box(String())
     let playButtonType: Box<PlayButtonType> = Box(.play)
     let playProgress: Box<Float> = Box(.zero)
-    let currentTime = Box("")
-    let duration = Box("")
+    let currentTime = Box("00:00:00")
+    let duration = Box("00:00:00")
     
     // MARK: - properties
     
@@ -127,6 +127,7 @@ class PlayerPageViewModel: NSObject {
     
     /// If current episode is not the last episode, proceed to play the next episode. If it is the last episode, then keep this episode in player.
     func proceedToNextItem() {
+        currentTime.value = "00:00:00"
         if currentEpisodeIndex > 0 {
             currentEpisodeIndex -= 1
             proceedToEpisode(ep: currentEpisodeIndex)
@@ -142,6 +143,7 @@ class PlayerPageViewModel: NSObject {
     
     /// If current episode is not the first episode, proceed to play the previous episode. If it is the first episode, then keep this episode in player.
     func proceedToPreviousItem() {
+        currentTime.value = "00:00:00"
         if playerDetails.count - 1 > currentEpisodeIndex {
             currentEpisodeIndex += 1
             proceedToEpisode(ep: currentEpisodeIndex)

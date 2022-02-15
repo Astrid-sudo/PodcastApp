@@ -21,7 +21,6 @@ class HomePageViewModel: NSObject {
 
     let networkAvailable: Box<Bool> = Box(true)
     let rssFeedItems: Box<[RssItem]> = Box([RssItem]())
-//    let homeImage: Box<UIImage> = Box(UIImage())
     var homeImageUrlString: Box<String> = Box("")
     let episodePageViewModel: Box<EpisodePageViewModel> = Box(EpisodePageViewModel())
 
