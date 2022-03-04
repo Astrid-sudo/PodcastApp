@@ -26,9 +26,6 @@ class HomePageViewModel: NSObject {
 
     // MARK: - properties
     
-    private(set) lazy var networkManager: NetworkManager = {
-        return NetworkManager()
-    }()
     
     private lazy var rssHelper: RssHelper = {
         return RssHelper()
@@ -126,7 +123,7 @@ extension HomePageViewModel: RssHelperDelegate {
 // MARK: - NetworkCheckable
 
 extension HomePageViewModel: NetworkCheckable {
-
+    
     private func connectionHandler() {
         DispatchQueue.main.async {
                 self.continueParseRssFeed()

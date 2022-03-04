@@ -8,14 +8,21 @@
 import Network
 
 class NetworkManager {
+    
+    static let shared = NetworkManager()
+    
     let monitor = NWPathMonitor()
+    
+    private init() {}
 }
 
-protocol NetworkCheckable {
-    var networkManager: NetworkManager { get }
-}
+protocol NetworkCheckable {}
 
 extension NetworkCheckable {
+    
+    var networkMonitor: NWPathMonitor {
+        return NetworkManager.shared.monitor
+    }
     
     /// Check whether there is network connection.
     /// - Parameters:
@@ -23,16 +30,14 @@ extension NetworkCheckable {
     ///   - noConnectionHandler: The closure will be executed if there is no network connection.
     func checkNetwork(connectionHandler: @escaping ()->Void,
                       noConnectionHandler: @escaping ()->Void) {
-        networkManager.monitor.pathUpdateHandler = { path in
+        networkMonitor.pathUpdateHandler = { path in
             if path.status == .satisfied {
                 connectionHandler()
-
             } else {
                 noConnectionHandler()
-
             }
         }
-        networkManager.monitor.start(queue: DispatchQueue.global())
+        networkMonitor.start(queue: DispatchQueue.global())
     }
     
 }
