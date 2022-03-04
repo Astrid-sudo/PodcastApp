@@ -25,7 +25,7 @@ class PlayerPageViewModel: NSObject {
     var currentEpisodeIndex = 0
     var audioLink = ""
     
-    private lazy var audioPlayHelper: AudioPlayHelper = {
+    private lazy var audioPlayHelper: AVPlayable = {
         let audioPlayHelper = AudioPlayHelper()
         audioPlayHelper.delegate = self
         return audioPlayHelper
@@ -184,11 +184,11 @@ class PlayerPageViewModel: NSObject {
     
 }
 
-// MARK: - AudioPlayHelperDelegate
+// MARK: - AVPlayableDelegate
 
-extension PlayerPageViewModel: AudioPlayHelperDelegate {
+extension PlayerPageViewModel: AVPlayableDelegate {
     
-    func toggleButtonImage(_ audioPlayHelper: AudioPlayHelper, playerState: Int) {
+    func toggleButtonImage(_ audioPlayHelper: AVPlayable, playerState: Int) {
         if playerState == 2 {
             self.playButtonType.value = .pause
         } else {
@@ -196,21 +196,22 @@ extension PlayerPageViewModel: AudioPlayHelperDelegate {
         }
     }
     
-    func updateDuration(_ audioPlayHelper: AudioPlayHelper, duration: CMTime) {
+    func updateDuration(_ audioPlayHelper: AVPlayable, duration: CMTime) {
         changeDuration(duration: duration)
-        let time = audioPlayHelper.currentItemCurrentTime()
+        let time = self.audioPlayHelper.currentItemCurrentTime()
         changeProgress(currentTime: time, duration: duration)
     }
     
-    func updateCurrentTime(_ audioPlayHelper: AudioPlayHelper, currentTime: CMTime) {
+    func updateCurrentTime(_ audioPlayHelper: AVPlayable, currentTime: CMTime) {
         changeCurrentTime(currentTime: currentTime)
-        let itemDuration = audioPlayHelper.currentItemDuration()
+        let itemDuration = self.audioPlayHelper.currentItemDuration()
         changeProgress(currentTime: currentTime, duration: itemDuration)
     }
     
-    func didPlaybackEnd(_ audioPlayHelper: AudioPlayHelper) {
+    func didPlaybackEnd(_ audioPlayHelper: AVPlayable) {
         print("didPlaybackEnd")
         proceedToNextItem()
     }
     
 }
+

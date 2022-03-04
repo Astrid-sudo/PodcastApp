@@ -7,18 +7,9 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import "GCDTimer.h"
+#import "AVPlayable.h"
 
 @class AudioPlayHelper;
-
-typedef NS_ENUM(NSInteger, PlayerState) {
-    PlayerStateUnknow,
-    PlayerStateReadyToPlay,
-    PlayerStatePlaying,
-    PlayerStateBuffering,
-    PlayerStateFailed,
-    PlayerStatePause,
-    PlayerStateEnded,
-};
 
 @protocol AudioPlayHelperDelegate <NSObject>
 @required
@@ -53,7 +44,7 @@ typedef NS_ENUM(NSInteger, PlayerState) {
 
 @end
 
-@interface AudioPlayHelper : NSObject {
+@interface AudioPlayHelper : NSObject<AVPlayable> {
     PlayerState playerState;
 }
 
@@ -72,7 +63,7 @@ typedef NS_ENUM(NSInteger, PlayerState) {
 /*!
  * @discussion Delegate to recieve player state.
  */
-@property (nonatomic, weak) id <AudioPlayHelperDelegate> delegate;
+@property (nonatomic, weak) id <AVPlayableDelegate> delegate;
 
 /*!
  * @discussion The timeObserverToken created when add addPeriodicTimeObserver.

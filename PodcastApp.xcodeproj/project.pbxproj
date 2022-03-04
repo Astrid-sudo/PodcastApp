@@ -75,6 +75,7 @@
 		563F536F27BBAA0B00C2094B /* UITableViewCell+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+Extension.swift"; sourceTree = "<group>"; };
 		564A802D27B664130084F5E3 /* RssHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RssHelper.h; sourceTree = "<group>"; };
 		564A802E27B664130084F5E3 /* RssHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RssHelper.m; sourceTree = "<group>"; };
+		56F1C04627D1E7F5009606B8 /* AVPlayable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVPlayable.h; sourceTree = "<group>"; };
 		E3B1AB7522DC958A2AB53F81 /* Pods-PodcastApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PodcastApp.release.xcconfig"; path = "Target Support Files/Pods-PodcastApp/Pods-PodcastApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -173,6 +174,7 @@
 		56346EC127B4EAC500AECA6D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				56F1C04627D1E7F5009606B8 /* AVPlayable.h */,
 				56346EDA27B5204100AECA6D /* AudioPlayHelper.h */,
 				56346EDB27B5204100AECA6D /* AudioPlayHelper.m */,
 				56346ED727B5116D00AECA6D /* PodcastApp-Bridging-Header.h */,
