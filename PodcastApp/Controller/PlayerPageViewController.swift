@@ -6,13 +6,16 @@
 //
 
 import UIKit
+import RxSwift
 
 class PlayerPageViewController: UIViewController {
     
     // MARK: - properties
     
     var playerPageViewModel: PlayerPageViewModel?
-    
+
+	private let bag = DisposeBag()
+
     // MARK: - UI properties
     
     private lazy var playerPageView: PlayerPageView = {
@@ -56,37 +59,75 @@ class PlayerPageViewController: UIViewController {
     
     func binding() {
         guard let playerPageViewModel = playerPageViewModel else { return }
-        
-        playerPageViewModel.epImageUrl.bind { [weak self] imageUrl in
-            guard let self = self else { return }
-            self.playerPageView.epImageView.loadImage(imageUrl, placeHolder: nil)
-        }
 
-        playerPageViewModel.epTitle.bind { [weak self] epTitle in
-            guard let self = self else { return }
-            self.playerPageView.epTitleLabel.text = epTitle
-        }
-        
-        playerPageViewModel.playButtonType.bind { [weak self] playButtonType in
-            guard let self = self else { return }
-            self.togglePlayButtonImage(playButtonType)
-        }
-        
-        playerPageViewModel.playProgress.bind { [weak self] playProgress in
-            guard let self = self else { return }
-            self.playerPageView.progressSlider.value = playProgress
-        }
-        
-        playerPageViewModel.duration.bind { [weak self] duration in
-            guard let self = self else { return }
-            self.playerPageView.durationLabel.text = duration
-        }
-        
-        playerPageViewModel.currentTime.bind { [weak self] currentTime in
-            guard let self = self else { return }
-            self.playerPageView.currentTimeLabel.text = currentTime
-        }
+//        playerPageViewModel.epImageUrl.bind { [weak self] imageUrl in
+//            guard let self = self else { return }
+//            self.playerPageView.epImageView.loadImage(imageUrl, placeHolder: nil)
+//        }
+		playerPageViewModel.epImageUrl
+			.subscribe(onNext: { [weak self] imageUrl in
+			guard let self = self else { return }
+			self.playerPageView.epImageView.loadImage(imageUrl, placeHolder: nil)
+		})
+			.disposed(by: bag)
 
+//        playerPageViewModel.epTitle.bind { [weak self] epTitle in
+//            guard let self = self else { return }
+//            self.playerPageView.epTitleLabel.text = epTitle
+//        }
+		playerPageViewModel.epTitle
+			.subscribe(onNext: { [weak self] epTitle in
+				guard let self = self else { return }
+				self.playerPageView.epTitleLabel.text = epTitle
+			})
+			.disposed(by: bag)
+
+//        playerPageViewModel.playButtonType.bind { [weak self] playButtonType in
+//            guard let self = self else { return }
+//            self.togglePlayButtonImage(playButtonType)
+//        }
+		playerPageViewModel.playButtonType
+			.subscribe(onNext: { [weak self] playButtonType in
+				guard let self = self else { return }
+				self.togglePlayButtonImage(playButtonType)
+			})
+			.disposed(by: bag)
+
+        
+//        playerPageViewModel.playProgress.bind { [weak self] playProgress in
+//            guard let self = self else { return }
+//            self.playerPageView.progressSlider.value = playProgress
+//        }
+		playerPageViewModel.playProgress
+			.subscribe(onNext: { [weak self] playProgress in
+				guard let self = self else { return }
+				self.playerPageView.progressSlider.value = playProgress
+			})
+			.disposed(by: bag)
+
+        
+//        playerPageViewModel.duration.bind { [weak self] duration in
+//            guard let self = self else { return }
+//            self.playerPageView.durationLabel.text = duration
+//        }
+		playerPageViewModel.duration
+			.subscribe(onNext: { [weak self] duration in
+				guard let self = self else { return }
+				self.playerPageView.durationLabel.text = duration
+			})
+			.disposed(by: bag)
+
+        
+//        playerPageViewModel.currentTime.bind { [weak self] currentTime in
+//            guard let self = self else { return }
+//            self.playerPageView.currentTimeLabel.text = currentTime
+//        }
+		playerPageViewModel.currentTime
+			.subscribe(onNext: { [weak self] currentTime in
+				guard let self = self else { return }
+				self.playerPageView.currentTimeLabel.text = currentTime
+			})
+			.disposed(by: bag)
     }
     
     func togglePlayButtonImage(_ playButtonType:PlayButtonType) {

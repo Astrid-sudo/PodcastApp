@@ -5,4 +5,5 @@ use_frameworks!
 
 target 'PodcastApp' do
     pod 'Kingfisher'
+    pod 'RxSwift'
 end
