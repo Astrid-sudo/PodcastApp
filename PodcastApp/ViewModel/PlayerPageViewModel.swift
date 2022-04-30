@@ -13,13 +13,6 @@ class PlayerPageViewModel: NSObject {
     
     // MARK: - properties be observed
     
-//    let epTitle: Box<String> = Box("")
-//    let epImageUrl: Box<String> = Box(String())
-//    let playButtonType: Box<PlayButtonType> = Box(.play)
-//    let playProgress: Box<Float> = Box(.zero)
-//    let currentTime = Box("00:00:00")
-//    let duration = Box("00:00:00")
-
 	var epTitle: Observable<String> {
 		return epTitleSubject.asObservable()
 	}
@@ -87,8 +80,6 @@ class PlayerPageViewModel: NSObject {
               let epImageUrl = currentPlayerDetail.epImageUrl,
               let audioLinkUrl = currentPlayerDetail.audioLinkUrl else { return }
         
-//        self.epTitle.value = epTitle
-//        self.epImageUrl.value = epImageUrl
 		self.epTitleSubject.onNext(epTitle)
 		self.epImageUrlSubject.onNext(epImageUrl)
         self.audioLink = audioLinkUrl
@@ -109,7 +100,6 @@ class PlayerPageViewModel: NSObject {
             return
         }
         let currenTimeSeconds = Float(CMTimeGetSeconds(currentTime))
-//        self.currentTime.value = TimeCalculator.float(toTimecodeString: currenTimeSeconds)
 		self.currentTimeSubject.onNext(TimeCalculator.float(toTimecodeString: currenTimeSeconds))
     }
     
@@ -117,12 +107,10 @@ class PlayerPageViewModel: NSObject {
     /// - Parameter duration: Current duration from audioPlayHelper.
     func changeDuration(duration: CMTime) {
         guard !duration.isIndefinite else {
-//            self.duration.value = "00:00:00"
 			self.durationSubject.onNext("00:00:00")
             return
         }
         let durationSeconds = Float(CMTimeGetSeconds(duration))
-//        self.duration.value = TimeCalculator.float(toTimecodeString: durationSeconds)
 		self.durationSubject.onNext(TimeCalculator.float(toTimecodeString: durationSeconds))
     }
     
@@ -133,7 +121,6 @@ class PlayerPageViewModel: NSObject {
         guard duration >= currentTime else { return }
         let currenTime = CMTimeGetSeconds(currentTime)
         let duration = CMTimeGetSeconds(duration)
-//        self.playProgress.value = Float(currenTime / duration)
 		self.playProgressSubject.onNext(Float(currenTime / duration))
     }
     
@@ -174,7 +161,6 @@ class PlayerPageViewModel: NSObject {
     
     /// If current episode is not the last episode, proceed to play the next episode. If it is the last episode, then keep this episode in player.
     func proceedToNextItem() {
-//        currentTime.value = "00:00:00"
 		currentTimeSubject.onNext("00:00:00")
         if currentEpisodeIndex > 0 {
             currentEpisodeIndex -= 1
@@ -191,7 +177,6 @@ class PlayerPageViewModel: NSObject {
     
     /// If current episode is not the first episode, proceed to play the previous episode. If it is the first episode, then keep this episode in player.
     func proceedToPreviousItem() {
-//        currentTime.value = "00:00:00"
 		currentTimeSubject.onNext("00:00:00")
         if playerDetails.count - 1 > currentEpisodeIndex {
             currentEpisodeIndex += 1
@@ -211,8 +196,6 @@ class PlayerPageViewModel: NSObject {
               let epTitle = playerDetails[ep].epTitle,
               let epImageUrl = playerDetails[ep].epImageUrl else { return }
         audioPlayHelper.replaceCurrentItem(audioLink)
-//        self.epTitle.value = epTitle
-//        self.epImageUrl.value = epImageUrl
 		self.epTitleSubject.onNext(epTitle)
 		self.epImageUrlSubject.onNext(epImageUrl)
 
@@ -234,7 +217,6 @@ extension PlayerPageViewModel: AudioPlayHelperDelegate {
     
     func toggleButtonImage(_ audioPlayHelper: AudioPlayHelper, playerState: Int) {
         if playerState == 2 {
-//            self.playButtonType.value = .pause
 			self.playButtonTypeSubject.onNext(.pause)
         } else {
             self.playButtonTypeSubject.onNext(.play)

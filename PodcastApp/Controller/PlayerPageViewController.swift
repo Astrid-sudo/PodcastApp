@@ -60,10 +60,6 @@ class PlayerPageViewController: UIViewController {
     func binding() {
         guard let playerPageViewModel = playerPageViewModel else { return }
 
-//        playerPageViewModel.epImageUrl.bind { [weak self] imageUrl in
-//            guard let self = self else { return }
-//            self.playerPageView.epImageView.loadImage(imageUrl, placeHolder: nil)
-//        }
 		playerPageViewModel.epImageUrl
 			.subscribe(onNext: { [weak self] imageUrl in
 			guard let self = self else { return }
@@ -71,10 +67,6 @@ class PlayerPageViewController: UIViewController {
 		})
 			.disposed(by: bag)
 
-//        playerPageViewModel.epTitle.bind { [weak self] epTitle in
-//            guard let self = self else { return }
-//            self.playerPageView.epTitleLabel.text = epTitle
-//        }
 		playerPageViewModel.epTitle
 			.subscribe(onNext: { [weak self] epTitle in
 				guard let self = self else { return }
@@ -82,10 +74,6 @@ class PlayerPageViewController: UIViewController {
 			})
 			.disposed(by: bag)
 
-//        playerPageViewModel.playButtonType.bind { [weak self] playButtonType in
-//            guard let self = self else { return }
-//            self.togglePlayButtonImage(playButtonType)
-//        }
 		playerPageViewModel.playButtonType
 			.subscribe(onNext: { [weak self] playButtonType in
 				guard let self = self else { return }
@@ -93,11 +81,6 @@ class PlayerPageViewController: UIViewController {
 			})
 			.disposed(by: bag)
 
-        
-//        playerPageViewModel.playProgress.bind { [weak self] playProgress in
-//            guard let self = self else { return }
-//            self.playerPageView.progressSlider.value = playProgress
-//        }
 		playerPageViewModel.playProgress
 			.subscribe(onNext: { [weak self] playProgress in
 				guard let self = self else { return }
@@ -105,11 +88,6 @@ class PlayerPageViewController: UIViewController {
 			})
 			.disposed(by: bag)
 
-        
-//        playerPageViewModel.duration.bind { [weak self] duration in
-//            guard let self = self else { return }
-//            self.playerPageView.durationLabel.text = duration
-//        }
 		playerPageViewModel.duration
 			.subscribe(onNext: { [weak self] duration in
 				guard let self = self else { return }
@@ -117,11 +95,6 @@ class PlayerPageViewController: UIViewController {
 			})
 			.disposed(by: bag)
 
-        
-//        playerPageViewModel.currentTime.bind { [weak self] currentTime in
-//            guard let self = self else { return }
-//            self.playerPageView.currentTimeLabel.text = currentTime
-//        }
 		playerPageViewModel.currentTime
 			.subscribe(onNext: { [weak self] currentTime in
 				guard let self = self else { return }
