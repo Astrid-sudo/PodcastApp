@@ -6,12 +6,14 @@
 //
 
 import UIKit
+import RxSwift
 
 class HomePageViewController: UIViewController {
     
     // MARK: - properties
     
     let homePageViewModel = HomePageViewModel()
+	let bag = DisposeBag()
     
     // MARK: - UI properties
     
@@ -65,41 +67,38 @@ class HomePageViewController: UIViewController {
     // MARK: - method
     
     func binding() {
+
+		homePageViewModel.networkAvailable.subscribe(onNext: { available in
+			if available {
+				if let noNetworkAlert = self.noNetworkAlert {
+					self.dismissAlert(noNetworkAlert, completion: nil)
+				}
+			} else {
+				self.noNetworkAlert = self.popAlert(title: "無網路連線", message: "請檢查您的網路連線")
+			}
+		}).disposed(by: bag)
         
-        homePageViewModel.networkAvailable.bind { [weak self] bool in
-            guard let self = self else { return }
-            if bool {
-                if let noNetworkAlert = self.noNetworkAlert {
-                    self.dismissAlert(noNetworkAlert, completion: nil)
-                }
-            } else {
-                self.noNetworkAlert = self.popAlert(title: "無網路連線", message: "請檢查您的網路連線")
-            }
-        }
+		homePageViewModel.rssFeedItems.subscribe(onNext: { _ in
+			self.tableView.reloadData()
+		}).disposed(by: bag)
+
+		homePageViewModel.homeImageUrlString.subscribe(onNext: { _ in
+			self.tableView.reloadData()
+		}).disposed(by: bag)
         
-        homePageViewModel.rssFeedItems.bind { [weak self] _ in
-            guard let self = self else { return }
-            self.tableView.reloadData()
-        }
-        
-        homePageViewModel.homeImageUrlString.bind { [weak self] _ in
-            guard let self = self else { return }
-            self.tableView.reloadData()
-        }
-        
-        homePageViewModel.episodePageViewModel.bind { [weak self] episodePageViewModel in
-            guard let self = self else { return }
-            if !episodePageViewModel.episodeDetails.isEmpty {
-                self.pushToEpisodePage(episodePageViewModel: episodePageViewModel)
-            }
-        }
+		homePageViewModel.episodePageViewModel.subscribe(onNext: { episodePageViewModel in
+			if !episodePageViewModel.episodeDetails.isEmpty {
+				self.pushToEpisodePage(episodePageViewModel: episodePageViewModel)
+			}
+		}).disposed(by: bag)
+
     }
     
     func prepareForEpisodePage(episodeIndex: Int) {
         guard let rssFeedTitle = homePageViewModel.rssFeedTitle else { return }
         let episodeDetails = homePageViewModel.transformToEpisodeDetails(rssFeedItems: homePageViewModel.rssFeedItems.value, podcastTitle: rssFeedTitle)
         let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: episodeIndex)
-        self.homePageViewModel.episodePageViewModel.value = episodeViewModel
+		self.homePageViewModel.episodePageViewModel.accept(episodeViewModel)
     }
     
     func pushToEpisodePage(episodePageViewModel: EpisodePageViewModel) {

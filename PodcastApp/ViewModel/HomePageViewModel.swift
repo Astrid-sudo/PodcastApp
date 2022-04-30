@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxRelay
 
 struct EpisodeDetail {
     let podcastTitile: String?
@@ -19,10 +21,13 @@ class HomePageViewModel: NSObject {
     
     // MARK: - properties be observed
 
-    let networkAvailable: Box<Bool> = Box(true)
-    let rssFeedItems: Box<[RssItem]> = Box([RssItem]())
-    var homeImageUrlString: Box<String> = Box("")
-    let episodePageViewModel: Box<EpisodePageViewModel> = Box(EpisodePageViewModel())
+	var networkAvailable: Observable<Bool> {
+		networkAvailableSubject.asObservable()
+	}
+	let rssFeedItems = BehaviorRelay<[RssItem]>(value: [])
+	let homeImageUrlString = BehaviorRelay<String>(value: "")
+	let episodePageViewModel = BehaviorRelay<EpisodePageViewModel>(value: EpisodePageViewModel())
+    private let networkAvailableSubject = PublishSubject<Bool>()
 
     // MARK: - properties
     
@@ -112,9 +117,9 @@ extension HomePageViewModel: RssHelperDelegate {
         feedParedFinished = true
         let rssItemArray = rssItems.compactMap({ $0 as? RssItem})
         self.originRssFeedItems = rssItemArray
-        self.rssFeedItems.value = transformItemsDate(items: originRssFeedItems)
+		self.rssFeedItems.accept(transformItemsDate(items: originRssFeedItems))
         self.rssFeedTitle = String(infoTitle)
-        homeImageUrlString.value = infoImage
+		homeImageUrlString.accept(infoImage)
     }
     
     func failedFetchRss(_ error: Error) {
@@ -130,13 +135,13 @@ extension HomePageViewModel: NetworkCheckable {
     private func connectionHandler() {
         DispatchQueue.main.async {
                 self.continueParseRssFeed()
-            self.networkAvailable.value = true
+			self.networkAvailableSubject.onNext(true)
         }
     }
     
     private func noConnectionHandler() {
         DispatchQueue.main.async {
-            self.networkAvailable.value = false
+			self.networkAvailableSubject.onNext(false)
         }
     }
     
