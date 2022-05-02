@@ -25,20 +25,20 @@ protocol EpisodePageViewModelInput {
 }
 
 protocol EpisodePageViewModelOutput {
-	var podcastTitle: BehaviorRelay<String> { get }
-	var epTitle: BehaviorRelay<String> { get }
-	var epImageUrl: BehaviorRelay<String> { get }
-	var epDescription: BehaviorRelay<String> { get }
+	var podcastTitle: Observable<String> { get }
+	var epTitle: Observable<String> { get }
+	var epImageUrl: Observable<String> { get }
+	var epDescription: Observable<String> { get }
 }
 
-class EpisodePageViewModel: EpisodePageViewModelOutput {
+class EpisodePageViewModel {
     
     // MARK: - properties be observed
     
-	let podcastTitle = BehaviorRelay<String>(value: "")
-	let epTitle = BehaviorRelay<String>(value: "")
-	let epImageUrl = BehaviorRelay<String>(value: "")
-	let epDescription = BehaviorRelay<String>(value: "")
+	private let podcastTitleBehaviorRelay = BehaviorRelay<String>(value: "")
+	private let epTitleBehaviorRelay = BehaviorRelay<String>(value: "")
+	private let epImageUrlBehaviorRelay = BehaviorRelay<String>(value: "")
+	private let epDescriptionBehaviorRelay = BehaviorRelay<String>(value: "")
 	
     // MARK: - properties
     
@@ -69,10 +69,10 @@ class EpisodePageViewModel: EpisodePageViewModelOutput {
               let epTitle = currentEpisodeDetail.epTitle,
               let epImage = currentEpisodeDetail.epImageUrl ,
               let epDescription = currentEpisodeDetail.epDescription else { return }
-		self.podcastTitle.accept(podcastTitile)
-        self.epTitle.accept(epTitle)
-        self.epImageUrl.accept(epImage)
-        self.epDescription.accept(epDescription)
+		self.podcastTitleBehaviorRelay.accept(podcastTitile)
+        self.epTitleBehaviorRelay.accept(epTitle)
+        self.epImageUrlBehaviorRelay.accept(epImage)
+        self.epDescriptionBehaviorRelay.accept(epDescription)
     }
     
     /// Transform EpisodeDetail array to PlayerDetails array.
@@ -89,7 +89,7 @@ class EpisodePageViewModel: EpisodePageViewModelOutput {
     
 }
 
-// MARK: -
+// MARK: - EpisodePageViewModelType
 
 extension EpisodePageViewModel: EpisodePageViewModelType {
 	var input: EpisodePageViewModelInput { self }
@@ -106,4 +106,13 @@ extension EpisodePageViewModel: EpisodePageViewModelInput {
 		let playerPageViewModel = PlayerPageViewModel(playerDetails: playerDetails, currentEpisodeIndex: currentEpisodeIndex)
 		return playerPageViewModel
 	}
+}
+
+// MARK: - EpisodePageViewModelOutput
+
+extension EpisodePageViewModel: EpisodePageViewModelOutput {
+	var podcastTitle: Observable<String> { podcastTitleBehaviorRelay.asObservable() }
+	var epTitle: Observable<String> { epTitleBehaviorRelay.asObservable() }
+	var epImageUrl: Observable<String> { epImageUrlBehaviorRelay.asObservable() }
+	var epDescription: Observable<String> { epDescriptionBehaviorRelay.asObservable() }
 }
