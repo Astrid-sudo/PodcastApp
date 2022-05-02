@@ -17,16 +17,32 @@ struct EpisodeDetail {
     let audioLinkUrl: String?
 }
 
-class HomePageViewModel: NSObject {
+protocol HomePageViewModelType {
+	var input: HomePageViewModelInput { get }
+	var output: HomePageViewModelOutput { get }
+}
+
+protocol HomePageViewModelInput { // Actions 外面的人要叫HomePageViewModel做的事
+	func transformToEpisodeDetails(rssFeedItems:[RssItem], podcastTitle: String) -> [EpisodeDetail]
+}
+
+protocol HomePageViewModelOutput { // UI HomePageViewModel要給外界觀察的值
+	var networkAvailable: Observable<Bool> { get }
+	var rssFeedItems: BehaviorRelay<[RssItem]> { get }
+	var homeImageUrlString: BehaviorRelay<String> { get }
+	var episodePageViewModel: BehaviorRelay<EpisodePageViewModel> { get }
+}
+
+class HomePageViewModel: NSObject, HomePageViewModelOutput {
     
-    // MARK: - properties be observed
+    // MARK: - properties be observed(HomePageViewModelOutput)
 
 	var networkAvailable: Observable<Bool> {
 		networkAvailableSubject.asObservable()
 	}
-	let rssFeedItems = BehaviorRelay<[RssItem]>(value: [])
-	let homeImageUrlString = BehaviorRelay<String>(value: "")
-	let episodePageViewModel = BehaviorRelay<EpisodePageViewModel>(value: EpisodePageViewModel())
+	var rssFeedItems = BehaviorRelay<[RssItem]>(value: [])
+	var homeImageUrlString = BehaviorRelay<String>(value: "")
+	var episodePageViewModel = BehaviorRelay<EpisodePageViewModel>(value: EpisodePageViewModel())
     private let networkAvailableSubject = PublishSubject<Bool>()
 
     // MARK: - properties
@@ -55,33 +71,16 @@ class HomePageViewModel: NSObject {
     // MARK: - method
     
     /// Fetch and parse RssFeed if parsing haven't finish.
-    func continueParseRssFeed() {
+    private func continueParseRssFeed() {
         if !feedParedFinished {
             rssHelper.parsefeed(withUrlString: reeFeedUrl)
         }
     }
     
-    /// Gathering data to create an EpisodeDetail array.
-    /// - Parameters:
-    ///   - rssFeedItems: Rss item array fetched from RSS Feed url.
-    ///   - podcastTitle: Podcast title fetched from RSS Feed url.
-    /// - Returns: EpisodeDetail array
-    func transformToEpisodeDetails(rssFeedItems:[RssItem],
-                                   podcastTitle: String) -> [EpisodeDetail] {
-        let episodeDetails = rssFeedItems.map {
-            EpisodeDetail(podcastTitile: podcastTitle,
-                          epTitle: $0.rssTitle,
-                          epImageUrl: $0.rssEpImageUrl,
-                          epDescription: $0.rssDescription,
-                          audioLinkUrl: $0.rssAudioUrl)
-        }
-        return episodeDetails
-    }
-    
     /// Make pubDate from "EEE, d MMM yyyy" to "yyyy/MM/d" in RssItem array.
     /// - Parameter items: An RssItem array.
     /// - Returns: An RssItem array with "yyyy/MM/d" format pubDate.
-    func transformItemsDate(items:[RssItem]) -> [RssItem] {
+    private func transformItemsDate(items:[RssItem]) -> [RssItem] {
         let newItems = items.map{
             RssItem(rssTitle: $0.rssTitle,
                     initWithRssDescription: $0.rssDescription,
@@ -94,7 +93,7 @@ class HomePageViewModel: NSObject {
     /// Convert date string from "EEE, d MMM yyyy HH:mm:ss +0000" to "yyyy/MM/d"
     /// - Parameter dateString: Date string in "EEE, d MMM yyyy HH:mm:ss +0000".
     /// - Returns: Date string in "yyyy/MM/d".
-    func convertDate(dateString: String) -> String {
+    private func convertDate(dateString: String) -> String {
         let string = String(dateString.dropLast(21))
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
@@ -107,6 +106,36 @@ class HomePageViewModel: NSObject {
         return ""
     }
     
+}
+
+// MARK: - HomePageViewModelType
+
+extension HomePageViewModel: HomePageViewModelType {
+	var input: HomePageViewModelInput { self }
+	var output: HomePageViewModelOutput { self }
+}
+
+// MARK: - HomePageViewModelInput
+
+extension HomePageViewModel: HomePageViewModelInput {
+
+	/// Gathering data to create an EpisodeDetail array.
+	/// - Parameters:
+	///   - rssFeedItems: Rss item array fetched from RSS Feed url.
+	///   - podcastTitle: Podcast title fetched from RSS Feed url.
+	/// - Returns: EpisodeDetail array
+	func transformToEpisodeDetails(rssFeedItems:[RssItem],
+								   podcastTitle: String) -> [EpisodeDetail] {
+		let episodeDetails = rssFeedItems.map {
+			EpisodeDetail(podcastTitile: podcastTitle,
+						  epTitle: $0.rssTitle,
+						  epImageUrl: $0.rssEpImageUrl,
+						  epDescription: $0.rssDescription,
+						  audioLinkUrl: $0.rssAudioUrl)
+		}
+		return episodeDetails
+	}
+
 }
 
 // MARK: - RssHelperDelegate

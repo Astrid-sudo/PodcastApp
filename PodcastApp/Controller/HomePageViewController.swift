@@ -68,7 +68,7 @@ class HomePageViewController: UIViewController {
     
     func binding() {
 
-		homePageViewModel.networkAvailable.subscribe(onNext: { available in
+		homePageViewModel.output.networkAvailable.subscribe(onNext: { available in
 			if available {
 				if let noNetworkAlert = self.noNetworkAlert {
 					self.dismissAlert(noNetworkAlert, completion: nil)
@@ -78,15 +78,15 @@ class HomePageViewController: UIViewController {
 			}
 		}).disposed(by: bag)
         
-		homePageViewModel.rssFeedItems.subscribe(onNext: { _ in
+		homePageViewModel.output.rssFeedItems.subscribe(onNext: { _ in
 			self.tableView.reloadData()
 		}).disposed(by: bag)
 
-		homePageViewModel.homeImageUrlString.subscribe(onNext: { _ in
+		homePageViewModel.output.homeImageUrlString.subscribe(onNext: { _ in
 			self.tableView.reloadData()
 		}).disposed(by: bag)
         
-		homePageViewModel.episodePageViewModel.subscribe(onNext: { episodePageViewModel in
+		homePageViewModel.output.episodePageViewModel.subscribe(onNext: { episodePageViewModel in
 			if !episodePageViewModel.episodeDetails.isEmpty {
 				self.pushToEpisodePage(episodePageViewModel: episodePageViewModel)
 			}
@@ -96,9 +96,9 @@ class HomePageViewController: UIViewController {
     
     func prepareForEpisodePage(episodeIndex: Int) {
         guard let rssFeedTitle = homePageViewModel.rssFeedTitle else { return }
-        let episodeDetails = homePageViewModel.transformToEpisodeDetails(rssFeedItems: homePageViewModel.rssFeedItems.value, podcastTitle: rssFeedTitle)
+		let episodeDetails = homePageViewModel.input.transformToEpisodeDetails(rssFeedItems: homePageViewModel.output.rssFeedItems.value, podcastTitle: rssFeedTitle)
         let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: episodeIndex)
-		self.homePageViewModel.episodePageViewModel.accept(episodeViewModel)
+		self.homePageViewModel.output.episodePageViewModel.accept(episodeViewModel)
     }
     
     func pushToEpisodePage(episodePageViewModel: EpisodePageViewModel) {
@@ -122,7 +122,7 @@ extension HomePageViewController: UITableViewDataSource {
         let row = indexPath.row
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomePageTableViewCell.reuseIdentifier) as? HomePageTableViewCell else { return UITableViewCell()}
         
-        cell.configCell(imageURLString: homePageViewModel.rssFeedItems.value[row].rssEpImageUrl , epTitle: homePageViewModel.rssFeedItems.value[row].rssTitle, updateDate: homePageViewModel.rssFeedItems.value[row].rssPubDate)
+		cell.configCell(imageURLString: homePageViewModel.output.rssFeedItems.value[row].rssEpImageUrl , epTitle: homePageViewModel.output.rssFeedItems.value[row].rssTitle, updateDate: homePageViewModel.output.rssFeedItems.value[row].rssPubDate)
         
         return cell
     }
