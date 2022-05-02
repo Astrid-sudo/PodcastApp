@@ -96,9 +96,9 @@ class HomePageViewController: UIViewController {
     
     func prepareForEpisodePage(episodeIndex: Int) {
         guard let rssFeedTitle = homePageViewModel.rssFeedTitle else { return }
-		let episodeDetails = homePageViewModel.input.transformToEpisodeDetails(rssFeedItems: homePageViewModel.output.rssFeedItems.value, podcastTitle: rssFeedTitle)
+		let episodeDetails = homePageViewModel.input.transformToEpisodeDetails(rssFeedItems: homePageViewModel.rssFeedPureItems, podcastTitle: rssFeedTitle)
         let episodeViewModel = EpisodePageViewModel(episodeDetails: episodeDetails, currentEpisodeIndex: episodeIndex)
-		self.homePageViewModel.output.episodePageViewModel.accept(episodeViewModel)
+		self.homePageViewModel.input.prepareForEpisodePage(episodePageViewModel: episodeViewModel)
     }
     
     func pushToEpisodePage(episodePageViewModel: EpisodePageViewModel) {
@@ -115,14 +115,16 @@ class HomePageViewController: UIViewController {
 extension HomePageViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        homePageViewModel.rssFeedItems.value.count
+		homePageViewModel.output.rssFeedPureItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let row = indexPath.row
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomePageTableViewCell.reuseIdentifier) as? HomePageTableViewCell else { return UITableViewCell()}
         
-		cell.configCell(imageURLString: homePageViewModel.output.rssFeedItems.value[row].rssEpImageUrl , epTitle: homePageViewModel.output.rssFeedItems.value[row].rssTitle, updateDate: homePageViewModel.output.rssFeedItems.value[row].rssPubDate)
+		cell.configCell(imageURLString: homePageViewModel.output.rssFeedPureItems[row].rssEpImageUrl ,
+						epTitle: homePageViewModel.output.rssFeedPureItems[row].rssTitle,
+						updateDate: homePageViewModel.output.rssFeedPureItems[row].rssPubDate)
         
         return cell
     }
@@ -135,7 +137,7 @@ extension HomePageViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: HomePageTableViewHeader.reuseIdentifier) as? HomePageTableViewHeader else { return UIView()}
-        headerView.configImage(urlString: homePageViewModel.homeImageUrlString.value)
+		headerView.configImage(urlString: homePageViewModel.output.homeImageUrlPureString)
         return headerView
     }
     

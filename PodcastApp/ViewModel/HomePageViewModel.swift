@@ -24,26 +24,29 @@ protocol HomePageViewModelType {
 
 protocol HomePageViewModelInput { // Actions 外面的人要叫HomePageViewModel做的事
 	func transformToEpisodeDetails(rssFeedItems:[RssItem], podcastTitle: String) -> [EpisodeDetail]
+	func prepareForEpisodePage(episodePageViewModel: EpisodePageViewModel)
 }
 
 protocol HomePageViewModelOutput { // UI HomePageViewModel要給外界觀察的值
 	var networkAvailable: Observable<Bool> { get }
-	var rssFeedItems: BehaviorRelay<[RssItem]> { get }
-	var homeImageUrlString: BehaviorRelay<String> { get }
-	var episodePageViewModel: BehaviorRelay<EpisodePageViewModel> { get }
+	var rssFeedItems: Observable<[RssItem]> { get }
+	var homeImageUrlString: Observable<String> { get }
+	var episodePageViewModel: Observable<EpisodePageViewModel> { get }
+	var homeImageUrlPureString: String { get }
+	var rssFeedPureItems: [RssItem] { get }
 }
 
-class HomePageViewModel: NSObject, HomePageViewModelOutput {
+class HomePageViewModel: NSObject {
     
-    // MARK: - properties be observed(HomePageViewModelOutput)
+    // MARK: - properties would be assigned value and be observed
 
-	var networkAvailable: Observable<Bool> {
-		networkAvailableSubject.asObservable()
-	}
-	var rssFeedItems = BehaviorRelay<[RssItem]>(value: [])
-	var homeImageUrlString = BehaviorRelay<String>(value: "")
-	var episodePageViewModel = BehaviorRelay<EpisodePageViewModel>(value: EpisodePageViewModel())
+	private let rssFeedItemsBehaviorRelay = BehaviorRelay<[RssItem]>(value: [])
+	private let homeImageUrlStringBehaviorRelay = BehaviorRelay<String>(value: "")
+	private let episodePageViewModelBehaviorRelay = BehaviorRelay<EpisodePageViewModel>(value: EpisodePageViewModel())
     private let networkAvailableSubject = PublishSubject<Bool>()
+
+	var homeImageUrlPureString: String { homeImageUrlStringBehaviorRelay.value }
+	var rssFeedPureItems: [RssItem] { rssFeedItemsBehaviorRelay.value }
 
     // MARK: - properties
     
@@ -136,6 +139,19 @@ extension HomePageViewModel: HomePageViewModelInput {
 		return episodeDetails
 	}
 
+	func prepareForEpisodePage(episodePageViewModel: EpisodePageViewModel) {
+		episodePageViewModelBehaviorRelay.accept(episodePageViewModel)
+	}
+
+}
+
+// MARK: - HomePageViewModelOutput
+
+extension HomePageViewModel: HomePageViewModelOutput {
+	var networkAvailable: Observable<Bool> { networkAvailableSubject.asObservable() }
+	var rssFeedItems: Observable<[RssItem]> { rssFeedItemsBehaviorRelay.asObservable() }
+	var homeImageUrlString: Observable<String> { homeImageUrlStringBehaviorRelay.asObservable() }
+	var episodePageViewModel: Observable<EpisodePageViewModel> { episodePageViewModelBehaviorRelay.asObservable() }
 }
 
 // MARK: - RssHelperDelegate
@@ -146,9 +162,9 @@ extension HomePageViewModel: RssHelperDelegate {
         feedParedFinished = true
         let rssItemArray = rssItems.compactMap({ $0 as? RssItem})
         self.originRssFeedItems = rssItemArray
-		self.rssFeedItems.accept(transformItemsDate(items: originRssFeedItems))
+		self.rssFeedItemsBehaviorRelay.accept(transformItemsDate(items: originRssFeedItems))
         self.rssFeedTitle = String(infoTitle)
-		homeImageUrlString.accept(infoImage)
+		homeImageUrlStringBehaviorRelay.accept(infoImage)
     }
     
     func failedFetchRss(_ error: Error) {
