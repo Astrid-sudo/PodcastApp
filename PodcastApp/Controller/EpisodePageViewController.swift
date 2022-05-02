@@ -6,12 +6,14 @@
 //
 
 import UIKit
+import RxSwift
 
 class EpisodePageViewController: UIViewController {
     
     // MARK: - properties
     
     var episodePageViewModel: EpisodePageViewModel?
+	let bag = DisposeBag()
     
     // MARK: - UI properties
     
@@ -56,26 +58,23 @@ class EpisodePageViewController: UIViewController {
     func binding() {
         
         guard let episodePageViewModel = episodePageViewModel else { return }
-        
-        episodePageViewModel.podcastTitle.bind { [weak self] podcastTitle in
-            guard let self = self else { return }
-            self.episodePageView.podcastTitleLabel.text = podcastTitle
-        }
-        
-        episodePageViewModel.epTitle.bind { [weak self] epTitle in
-            guard let self = self else { return }
-            self.episodePageView.epTitleLabel.text = epTitle
-        }
-        
-        episodePageViewModel.epDescription.bind { [weak self] epDescription in
-            guard let self = self else { return }
-            self.episodePageView.descriptionTextView.text = epDescription
-        }
-        
-        episodePageViewModel.epImageUrl.bind { [weak self] epImageString in
-            guard let self = self else { return }
-            self.episodePageView.epImageView.loadImage(epImageString)
-        }
+
+		episodePageViewModel.podcastTitle.subscribe(onNext: { string in
+			self.episodePageView.podcastTitleLabel.text = string
+		}).disposed(by: bag)
+
+		episodePageViewModel.epTitle.subscribe(onNext: { string in
+			self.episodePageView.epTitleLabel.text = string
+		}).disposed(by: bag)
+
+		episodePageViewModel.epDescription.subscribe(onNext: { string in
+			self.episodePageView.descriptionTextView.text = string
+		}).disposed(by: bag)
+
+		episodePageViewModel.epImageUrl.subscribe(onNext: { string in
+			self.episodePageView.epImageView.loadImage(string)
+		}).disposed(by: bag)
+
     }
     
     func presentPlayerPage(playerPageViewModel: PlayerPageViewModel) {

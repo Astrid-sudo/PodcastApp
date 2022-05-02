@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxRelay
 
 struct PlayerDetail {
     let epTitle: String?
@@ -17,11 +19,11 @@ class EpisodePageViewModel {
     
     // MARK: - properties be observed
     
-    let podcastTitle: Box<String> = Box("")
-    let epTitle: Box<String> = Box("")
-    let epImageUrl: Box<String> = Box("")
-    let epDescription: Box<String> = Box("")
-    
+	let podcastTitle = BehaviorRelay<String>(value: "")
+	let epTitle = BehaviorRelay<String>(value: "")
+	let epImageUrl = BehaviorRelay<String>(value: "")
+	let epDescription = BehaviorRelay<String>(value: "")
+	
     // MARK: - properties
     
     var episodeDetails = [EpisodeDetail]()
@@ -51,11 +53,10 @@ class EpisodePageViewModel {
               let epTitle = currentEpisodeDetail.epTitle,
               let epImage = currentEpisodeDetail.epImageUrl ,
               let epDescription = currentEpisodeDetail.epDescription else { return }
-        
-        self.podcastTitle.value = podcastTitile
-        self.epTitle.value = epTitle
-        self.epImageUrl.value = epImage
-        self.epDescription.value = epDescription
+		self.podcastTitle.accept(podcastTitile)
+        self.epTitle.accept(epTitle)
+        self.epImageUrl.accept(epImage)
+        self.epDescription.accept(epDescription)
     }
     
     /// Create PlayerPageViewModel.
