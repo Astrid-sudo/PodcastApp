@@ -59,19 +59,19 @@ class EpisodePageViewController: UIViewController {
         
         guard let episodePageViewModel = episodePageViewModel else { return }
 
-		episodePageViewModel.podcastTitle.subscribe(onNext: { string in
+		episodePageViewModel.output.podcastTitle.subscribe(onNext: { string in
 			self.episodePageView.podcastTitleLabel.text = string
 		}).disposed(by: bag)
 
-		episodePageViewModel.epTitle.subscribe(onNext: { string in
+		episodePageViewModel.output.epTitle.subscribe(onNext: { string in
 			self.episodePageView.epTitleLabel.text = string
 		}).disposed(by: bag)
 
-		episodePageViewModel.epDescription.subscribe(onNext: { string in
+		episodePageViewModel.output.epDescription.subscribe(onNext: { string in
 			self.episodePageView.descriptionTextView.text = string
 		}).disposed(by: bag)
 
-		episodePageViewModel.epImageUrl.subscribe(onNext: { string in
+		episodePageViewModel.output.epImageUrl.subscribe(onNext: { string in
 			self.episodePageView.epImageView.loadImage(string)
 		}).disposed(by: bag)
 
@@ -92,7 +92,7 @@ extension EpisodePageViewController: EpisodePageViewDelegate {
     
     func handleTap(_ episodePageView: EpisodePageView) {
         guard let episodePageViewModel = episodePageViewModel else { return }
-        let playerPageViewModel = episodePageViewModel.createPlayerPageViewModel()
+		let playerPageViewModel = episodePageViewModel.input.createPlayerPageViewModel()
         presentPlayerPage(playerPageViewModel: playerPageViewModel)
     }
     

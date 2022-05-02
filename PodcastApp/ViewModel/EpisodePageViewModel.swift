@@ -15,7 +15,23 @@ struct PlayerDetail {
     let audioLinkUrl: String?
 }
 
-class EpisodePageViewModel {
+protocol EpisodePageViewModelType {
+	var input: EpisodePageViewModelInput { get }
+	var output: EpisodePageViewModelOutput { get }
+}
+
+protocol EpisodePageViewModelInput {
+	func createPlayerPageViewModel() -> PlayerPageViewModel
+}
+
+protocol EpisodePageViewModelOutput {
+	var podcastTitle: BehaviorRelay<String> { get }
+	var epTitle: BehaviorRelay<String> { get }
+	var epImageUrl: BehaviorRelay<String> { get }
+	var epDescription: BehaviorRelay<String> { get }
+}
+
+class EpisodePageViewModel: EpisodePageViewModelOutput {
     
     // MARK: - properties be observed
     
@@ -46,7 +62,7 @@ class EpisodePageViewModel {
     // MARK: - method
     
     /// Parse feed item and store in local properties.
-    func parseFeedItem() {
+	private func parseFeedItem() {
         guard episodeDetails.count > currentEpisodeIndex else { return }
         let currentEpisodeDetail = episodeDetails[currentEpisodeIndex]
         guard let podcastTitile = currentEpisodeDetail.podcastTitile,
@@ -59,18 +75,10 @@ class EpisodePageViewModel {
         self.epDescription.accept(epDescription)
     }
     
-    /// Create PlayerPageViewModel.
-    /// - Returns: The view model prepare for next page.
-    func createPlayerPageViewModel() -> PlayerPageViewModel {
-        let playerDetails = transformToPlayerDetails(episodeDetails: episodeDetails)
-        let playerPageViewModel = PlayerPageViewModel(playerDetails: playerDetails, currentEpisodeIndex: currentEpisodeIndex)
-        return playerPageViewModel
-    }
-    
     /// Transform EpisodeDetail array to PlayerDetails array.
     /// - Parameter episodeDetails: EpisodeDetail array.
     /// - Returns: PlayerDetail array.
-    func transformToPlayerDetails(episodeDetails:[EpisodeDetail]) -> [PlayerDetail] {
+    private func transformToPlayerDetails(episodeDetails:[EpisodeDetail]) -> [PlayerDetail] {
         let playerDetails = episodeDetails.map {
             PlayerDetail(epTitle: $0.epTitle,
                          epImageUrl: $0.epImageUrl,
@@ -79,4 +87,23 @@ class EpisodePageViewModel {
         return playerDetails
     }
     
+}
+
+// MARK: -
+
+extension EpisodePageViewModel: EpisodePageViewModelType {
+	var input: EpisodePageViewModelInput { self }
+	var output: EpisodePageViewModelOutput { self }
+}
+
+// MARK: - EpisodePageViewModelInput
+
+extension EpisodePageViewModel: EpisodePageViewModelInput {
+	/// Create PlayerPageViewModel.
+	/// - Returns: The view model prepare for next page.
+	func createPlayerPageViewModel() -> PlayerPageViewModel {
+		let playerDetails = transformToPlayerDetails(episodeDetails: episodeDetails)
+		let playerPageViewModel = PlayerPageViewModel(playerDetails: playerDetails, currentEpisodeIndex: currentEpisodeIndex)
+		return playerPageViewModel
+	}
 }
