@@ -9,34 +9,32 @@ import UIKit
 import CoreMedia
 import RxSwift
 
+protocol PlayerPageViewModelType {
+	var input: PlayerPageViewModelInput { get }
+	var output: PlayerPageViewModelOutput { get }
+}
+
+protocol PlayerPageViewModelInput {
+	func pausePlayer()
+	func togglePlay()
+	func switchToItem(_ switchType: SwitchItemType)
+	func slideToTime(_ sliderValue: Double)
+	func sliderTouchEnded(_ sliderValue: Double)
+}
+
+protocol PlayerPageViewModelOutput {
+	var epTitle: Observable<String> { get }
+	var epImageUrl: Observable<String> { get }
+	var playButtonType: Observable<PlayButtonType> { get }
+	var playProgress: Observable<Float> { get }
+	var currentTime : Observable<String> { get }
+	var duration : Observable<String> { get }
+}
+
 class PlayerPageViewModel: NSObject {
     
     // MARK: - properties be observed
     
-	var epTitle: Observable<String> {
-		return epTitleSubject.asObservable()
-	}
-
-	var epImageUrl: Observable<String> {
-		return epImageUrlSubject.asObservable()
-	}
-
-	var playButtonType: Observable<PlayButtonType> {
-		return playButtonTypeSubject.asObservable()
-	}
-
-	var playProgress: Observable<Float> {
-		return playProgressSubject.asObservable()
-	}
-
-	var currentTime : Observable<String> {
-		currentTimeSubject.asObservable()
-	}
-
-	var duration : Observable<String> {
-		durationSubject.asObservable()
-	}
-
 	private let epTitleSubject = BehaviorSubject<String>(value: "")
 	private let epImageUrlSubject =  BehaviorSubject<String>(value: "")
 	private let playButtonTypeSubject = BehaviorSubject<PlayButtonType>(value: .play)
@@ -73,7 +71,7 @@ class PlayerPageViewModel: NSObject {
     // MARK: - method
     
     /// Parse PlayerDetail and store in local properties.
-    func parsePlayerDetail() {
+	private func parsePlayerDetail() {
         guard playerDetails.count > currentEpisodeIndex else { return }
         let currentPlayerDetail = playerDetails[currentEpisodeIndex]
         guard let epTitle = currentPlayerDetail.epTitle,
@@ -86,16 +84,15 @@ class PlayerPageViewModel: NSObject {
     }
     
     /// Configure audioPlayHelper by audioLinkUrl.
-    private func configPlayer() {
+	private func configPlayer() {
         guard let audioLinkUrl = playerDetails[currentEpisodeIndex].audioLinkUrl else { return }
         audioPlayHelper.configPlayer(audioLinkUrl)
     }
     
     /// Change current time.
     /// - Parameter currentTime: Current currentTime from audioPlayHelper.
-    func changeCurrentTime(currentTime: CMTime) {
+	private func changeCurrentTime(currentTime: CMTime) {
         guard !currentTime.isIndefinite else {
-//            self.currentTime.value = "00:00:00"
 			self.currentTimeSubject.onNext("00:00:00")
             return
         }
@@ -105,7 +102,7 @@ class PlayerPageViewModel: NSObject {
     
     /// Change duration.
     /// - Parameter duration: Current duration from audioPlayHelper.
-    func changeDuration(duration: CMTime) {
+	private func changeDuration(duration: CMTime) {
         guard !duration.isIndefinite else {
 			self.durationSubject.onNext("00:00:00")
             return
@@ -117,7 +114,7 @@ class PlayerPageViewModel: NSObject {
     /// Change play progress.
     /// - Parameter currentTime: Current currentTime from audioPlayHelper.
     /// - Parameter duration: Current duration from audioPlayHelper.
-    func changeProgress(currentTime: CMTime, duration: CMTime) {
+	private func changeProgress(currentTime: CMTime, duration: CMTime) {
         guard duration >= currentTime else { return }
         let currenTime = CMTimeGetSeconds(currentTime)
         let duration = CMTimeGetSeconds(duration)
@@ -126,41 +123,8 @@ class PlayerPageViewModel: NSObject {
     
     // MARK: - player method
     
-    /// Ask audioPlayHelper togglePlay.
-    func togglePlay() {
-        audioPlayHelper.togglePlay()
-    }
-    
-    /// Tell if user want to proceed to next or previous item.
-    /// - Parameter switchType: next or previous item.
-    func switchToItem(_ switchType: SwitchItemType) {
-        switch switchType {
-        case .next:
-            proceedToNextItem()
-        case .previous:
-            proceedToPreviousItem()
-        }
-    }
-    
-    /// Ask audioPlayHelper slide to time according to progress bar value during value change.
-    /// - Parameter sliderValue: Progress bar value.
-    func slideToTime(_ sliderValue: Double) {
-        audioPlayHelper.slide(toTime: sliderValue)
-    }
-    
-    /// Ask audioPlayHelper slide to time according to progress bar value when value changed end.
-    /// - Parameter sliderValue: Progress bar value.
-    func sliderTouchEnded(_ sliderValue: Double) {
-        audioPlayHelper.sliderTouchEnded(sliderValue)
-    }
-    
-    /// Ask audioPlayHelper to pausePlayer.
-    func pausePlayer() {
-        audioPlayHelper.pausePlayer()
-    }
-    
     /// If current episode is not the last episode, proceed to play the next episode. If it is the last episode, then keep this episode in player.
-    func proceedToNextItem() {
+    private func proceedToNextItem() {
 		currentTimeSubject.onNext("00:00:00")
         if currentEpisodeIndex > 0 {
             currentEpisodeIndex -= 1
@@ -176,7 +140,7 @@ class PlayerPageViewModel: NSObject {
     }
     
     /// If current episode is not the first episode, proceed to play the previous episode. If it is the first episode, then keep this episode in player.
-    func proceedToPreviousItem() {
+	private func proceedToPreviousItem() {
 		currentTimeSubject.onNext("00:00:00")
         if playerDetails.count - 1 > currentEpisodeIndex {
             currentEpisodeIndex += 1
@@ -191,7 +155,7 @@ class PlayerPageViewModel: NSObject {
     
     /// Replace new episode data on UI and in player.
     /// - Parameter ep: The episode index.
-    func proceedToEpisode(ep: Int) {
+	private func proceedToEpisode(ep: Int) {
         guard let audioLink = playerDetails[ep].audioLinkUrl,
               let epTitle = playerDetails[ep].epTitle,
               let epImageUrl = playerDetails[ep].epImageUrl else { return }
@@ -201,10 +165,9 @@ class PlayerPageViewModel: NSObject {
 
     }
     
-    
     /// Keep current episode in player and pause the player.
     /// - Parameter audioLink: Audio url.
-    func keepCurrentEpisode(with audioLink: String) {
+	private func keepCurrentEpisode(with audioLink: String) {
         audioPlayHelper.replaceCurrentItem(audioLink)
         audioPlayHelper.pausePlayer()
     }
@@ -241,3 +204,60 @@ extension PlayerPageViewModel: AudioPlayHelperDelegate {
     }
     
 }
+
+// MARK: - PlayerPageViewModelType
+
+extension PlayerPageViewModel: PlayerPageViewModelType {
+	var input: PlayerPageViewModelInput { self }
+	var output: PlayerPageViewModelOutput { self }
+}
+
+// MARK: - PlayerPageViewModelInput
+extension PlayerPageViewModel: PlayerPageViewModelInput {
+
+	/// Ask audioPlayHelper togglePlay.
+	func togglePlay() {
+		audioPlayHelper.togglePlay()
+	}
+
+	/// Tell if user want to proceed to next or previous item.
+	/// - Parameter switchType: next or previous item.
+	func switchToItem(_ switchType: SwitchItemType) {
+		switch switchType {
+		case .next:
+			proceedToNextItem()
+		case .previous:
+			proceedToPreviousItem()
+		}
+	}
+
+	/// Ask audioPlayHelper slide to time according to progress bar value during value change.
+	/// - Parameter sliderValue: Progress bar value.
+	func slideToTime(_ sliderValue: Double) {
+		audioPlayHelper.slide(toTime: sliderValue)
+	}
+
+	/// Ask audioPlayHelper slide to time according to progress bar value when value changed end.
+	/// - Parameter sliderValue: Progress bar value.
+	func sliderTouchEnded(_ sliderValue: Double) {
+		audioPlayHelper.sliderTouchEnded(sliderValue)
+	}
+
+	/// Ask audioPlayHelper to pausePlayer.
+	func pausePlayer() {
+		audioPlayHelper.pausePlayer()
+	}
+
+}
+
+// MARK: - PlayerPageViewModelOutput
+extension PlayerPageViewModel: PlayerPageViewModelOutput {
+	var epTitle: Observable<String> { epTitleSubject.asObservable() }
+	var epImageUrl: Observable<String> { epImageUrlSubject.asObservable() }
+	var playButtonType: Observable<PlayButtonType> { playButtonTypeSubject.asObservable() }
+	var playProgress: Observable<Float> { playProgressSubject.asObservable() }
+	var currentTime : Observable<String> { currentTimeSubject.asObservable() }
+	var duration : Observable<String> { durationSubject.asObservable() }
+}
+
+

@@ -60,42 +60,42 @@ class PlayerPageViewController: UIViewController {
     func binding() {
         guard let playerPageViewModel = playerPageViewModel else { return }
 
-		playerPageViewModel.epImageUrl
+		playerPageViewModel.output.epImageUrl
 			.subscribe(onNext: { [weak self] imageUrl in
 			guard let self = self else { return }
 			self.playerPageView.epImageView.loadImage(imageUrl, placeHolder: nil)
 		})
 			.disposed(by: bag)
 
-		playerPageViewModel.epTitle
+		playerPageViewModel.output.epTitle
 			.subscribe(onNext: { [weak self] epTitle in
 				guard let self = self else { return }
 				self.playerPageView.epTitleLabel.text = epTitle
 			})
 			.disposed(by: bag)
 
-		playerPageViewModel.playButtonType
+		playerPageViewModel.output.playButtonType
 			.subscribe(onNext: { [weak self] playButtonType in
 				guard let self = self else { return }
 				self.togglePlayButtonImage(playButtonType)
 			})
 			.disposed(by: bag)
 
-		playerPageViewModel.playProgress
+		playerPageViewModel.output.playProgress
 			.subscribe(onNext: { [weak self] playProgress in
 				guard let self = self else { return }
 				self.playerPageView.progressSlider.value = playProgress
 			})
 			.disposed(by: bag)
 
-		playerPageViewModel.duration
+		playerPageViewModel.output.duration
 			.subscribe(onNext: { [weak self] duration in
 				guard let self = self else { return }
 				self.playerPageView.durationLabel.text = duration
 			})
 			.disposed(by: bag)
 
-		playerPageViewModel.currentTime
+		playerPageViewModel.output.currentTime
 			.subscribe(onNext: { [weak self] currentTime in
 				guard let self = self else { return }
 				self.playerPageView.currentTimeLabel.text = currentTime
@@ -117,7 +117,7 @@ extension PlayerPageViewController: PlayerPageViewDelegate {
     
     func pauseToSeek(_ playerPageView: PlayerPageView) {
         guard let playerPageViewModel = playerPageViewModel else { return }
-        playerPageViewModel.pausePlayer()
+		playerPageViewModel.input.pausePlayer()
     }
     
     func handleTap(_ playerPageView: PlayerPageView, tapType: PlayerPageViewTapType) {
@@ -127,10 +127,10 @@ extension PlayerPageViewController: PlayerPageViewDelegate {
         switch tapType {
             
         case .togglePlay:
-            playerPageViewModel.togglePlay()
+			playerPageViewModel.input.togglePlay()
             
         case .switchItem(let switchType):
-            playerPageViewModel.switchToItem(switchType)
+			playerPageViewModel.input.switchToItem(switchType)
             
         }
     }
@@ -140,9 +140,9 @@ extension PlayerPageViewController: PlayerPageViewDelegate {
         
         switch sliderEventType {
         case .progressValueChange(let sliderValue):
-            playerPageViewModel.slideToTime(Double(sliderValue))
+			playerPageViewModel.input.slideToTime(Double(sliderValue))
         case .progressTouchEnd(let sliderValue):
-            playerPageViewModel.sliderTouchEnded(Double(sliderValue))
+			playerPageViewModel.input.sliderTouchEnded(Double(sliderValue))
         }
     }
     
